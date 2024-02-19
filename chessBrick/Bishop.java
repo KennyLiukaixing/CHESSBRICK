@@ -1,4 +1,4 @@
-package chessBrick;
+package ChessBrickCopy;
 
 import java.util.Arrays;
 

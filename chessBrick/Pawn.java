@@ -1,9 +1,10 @@
-package chessBrick;
+package ChessBrickCopy;
 
 import java.util.Arrays;
 
 public class Pawn extends Piece{
-	public Pawn(int x, int y) {
+	public Pawn(int x, int y, char tag, Board board) {
+		super(x,y,tag,board);
 		moves.addAll(Arrays.asList(
 			new DeltaMovement(0,1)
 		));

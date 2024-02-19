@@ -1,5 +1,7 @@
-package chessBrick;
-import java.util.*;
+package ChessBrickCopy;
+
+import java.util.ArrayList;
+
 
 public abstract class Piece {
 	public char tag;

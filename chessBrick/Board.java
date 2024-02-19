@@ -1,5 +1,4 @@
-package chessBrick;
-
+package ChessBrickCopy;
 import java.util.ArrayList;
 
 public class Board {
@@ -9,6 +8,19 @@ public class Board {
 	
 	public Board() {
 		
+	}
+	//WHITE: r
+	//BLACK: R
+	public void makeDefault() {
+		board[0][7] = new Rook(0,7,'r',this);
+		board[7][7] = new Rook(7,7,'r',this);
+		board[0][0] = new Rook(0,0,'R',this);
+		board[7][0] = new Rook(7,0,'R',this);
+		board[1][7] = new Rook(1,7,'h',this);
+		board[6][7] = new Rook(6,7,'h',this);
+		board[1][0] = new Rook(1,0,'H',this);
+		board[6][0] = new Rook(6,0,'H',this);
+		//TODO: fill out
 	}
 	
 	public boolean isEmpty(int x, int y) {
