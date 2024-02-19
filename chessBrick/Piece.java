@@ -13,7 +13,6 @@ public abstract class Piece {
 	int xPos, yPos;
 	boolean canPromote;
 	
-	
 	public Piece(int x, int y, char tag, Board board) {
 		this.xPos = x;
 		this.yPos = y;
@@ -40,32 +39,43 @@ public abstract class Piece {
 		if(this.tag == 'p'||this.tag == 'k'||this.tag == 'h'
 				||this.tag == 'P'||this.tag == 'K'||this.tag == 'H') {
 			for(DeltaMovement d: moves) {
-				if(board.isEmpty(xPos+d.dx,yPos+d.dy)) legals.add(d);
+				if(xPos+d.dx<0||xPos+d.dx>7||yPos+d.dy<0||yPos+d.dy>7) {
+					//do nothing
+				}
 				else {
-					if(!board.sameSide(this,
-							board.getPiece(xPos+d.dx,yPos+d.dy))){
-						board.remove(board.getPiece(xPos+d.dx,yPos+d.dy));
-						DeltaMovement nd = new DeltaMovement(d.dx,d.dy,true);
-						legals.add(d);
+					if(board.isEmpty(xPos+d.dx,yPos+d.dy)) legals.add(
+							new DeltaMovement(xPos+d.dx,yPos+d.dy));
+					else {
+						if(!board.sameSide(this,
+								board.getPiece(xPos+d.dx,yPos+d.dy))){
+							board.remove(board.getPiece(xPos+d.dx,yPos+d.dy));
+							legals.add(new DeltaMovement(xPos+d.dx,yPos+d.dy,true));
+						}
 					}
 				}
 			}
 			return legals;
 		}
 		else {
-			for(int i = 0; i<8;i++) {
-				for(DeltaMovement d:moves) {
+			for(DeltaMovement d:moves) {
+				for(int i = 1; i<8;i++) {
+					if(xPos+d.dx*i<0||xPos+d.dx*i>7||yPos+d.dy*i<0||yPos+d.dy*i>7) break;
 					if(!board.isEmpty(xPos+d.dx*i,yPos+d.dy*i)) {
 						if(board.sameSide(this,
 								board.getPiece(xPos+d.dx*i,yPos+d.dy*i))) {
+							//System.out.println((xPos+d.dx*i)+" "+(yPos+d.dy*i));
 							break;
 						}
 						else {
-							legals.add(d);
+							legals.add(new DeltaMovement(xPos+d.dx*i,yPos+d.dy*i, true));
 							break;
 						}
 					}
-					else legals.add(d);
+					
+					else {
+						legals.add(new DeltaMovement(xPos+d.dx*i,yPos+d.dy*i));
+						//System.out.println((xPos+d.dx*i)+" "+(yPos+d.dy*i));
+					}
 				}
 			}
 			return legals;

@@ -13,4 +13,8 @@ public class DeltaMovement {
 		this.dy = y;
 		this.ext = ext;
 	}
+	public String toString() {
+		System.out.print(this.dx + " " + this.dy + "; ");
+		return this.dx + " " + this.dy;
+	}
 }
