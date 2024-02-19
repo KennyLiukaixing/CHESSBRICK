@@ -1,5 +1,3 @@
-package chessBrick;
-
 import java.util.Arrays;
 public class King extends Piece{
 	public King(int x, int y, char tag, Board board) {

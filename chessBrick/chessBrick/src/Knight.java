@@ -1,5 +1,3 @@
-package chessBrick;
-
 import java.util.Arrays;
 
 
