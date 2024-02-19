@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 
 public abstract class Piece {
+	public boolean moved = false;
 	public char tag;
 	public Board board;
 	public ArrayList<DeltaMovement> moves = 
@@ -12,22 +13,27 @@ public abstract class Piece {
 			new ArrayList<DeltaMovement>();
 	int xPos, yPos;
 	boolean canPromote;
+	boolean isPlayerSide = false;
 	
 	public Piece(int x, int y, char tag, Board board) {
 		this.xPos = x;
 		this.yPos = y;
 		this.tag = tag;
 		this.board = board;
+		if(tag == 'p'||tag == 'k'||tag == 'h'||tag == 'q'||tag == 'b'||tag == 'r') isPlayerSide = true;
 	}
 	
-	public boolean makeMove(int Tgtx, int Tgty) {
+	public boolean makeMovePlayer(int Tgtx, int Tgty) {
 		boolean success = false;
-		for(DeltaMovement d:this.legalMoves()) {
-			if(d.dx==Tgtx&&d.dy==Tgty) {
-				success = true;
-				board.replace(Tgtx, Tgty, this, this.xPos, this.yPos);
-				xPos = d.dx;
-				yPos = d.dy;
+		if(board.board[Tgtx][Tgty].isPlayerSide) {
+			for(DeltaMovement d:this.legalMoves()) {
+				if(d.dx==Tgtx&&d.dy==Tgty) {
+					success = true;
+					board.replace(Tgtx, Tgty, this, this.xPos, this.yPos);
+					xPos = d.dx;
+					yPos = d.dy;
+					moved = true;
+				}
 			}
 		}
 		return success;

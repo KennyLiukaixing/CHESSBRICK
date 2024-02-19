@@ -27,19 +27,25 @@ public class Game {
 		while(true) {
 			printBoard(b);
 			if(isPlayerTurn) {
-				System.out.println("Please type inputs as curX,curY,tgtX,tgtY, eg. 1,2,3,4");
+				System.out.println("Please type inputs as curX,curY;tgtX,tgtY, eg. 1,2;3,4");
 				String s = reader.readLine();
 				int curX, curY, tgtX, tgtY;
 				curX = s.charAt(0)-48;
 				curY = s.charAt(2)-48;
 				tgtX = s.charAt(4)-48;
 				tgtY = s.charAt(6)-48;
-				if(b.board[curX][curY].makeMove(tgtX, tgtY)) {
+				if(b.board[curX][curY].makeMovePlayer(tgtX, tgtY)) {
 					isPlayerTurn = false;
 				}
 			}
 			else {
-				String s = reader.readLine();
+				for(Piece p:b.onBoard) {
+					for(DeltaMovement d:p.legalMoves()) {
+						if(Math.random()>0.8) {
+							//p.makeMove(d.dx, d.dy);
+						}
+					}
+				}
 				isPlayerTurn = true;
 			}
 		}
