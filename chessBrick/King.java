@@ -1,4 +1,4 @@
-package ChessBrickCopy;
+package chessBrick;
 
 import java.util.Arrays;
 public class King extends Piece{

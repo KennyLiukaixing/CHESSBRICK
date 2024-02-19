@@ -1,4 +1,4 @@
-package ChessBrickCopy;
+package chessBrick;
 
 public class DeltaMovement {
 	public int dx, dy;

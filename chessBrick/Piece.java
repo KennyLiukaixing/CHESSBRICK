@@ -1,4 +1,4 @@
-package ChessBrickCopy;
+package chessBrick;
 
 import java.util.ArrayList;
 
@@ -26,6 +26,8 @@ public abstract class Piece {
 			if(d.dx==Tgtx&&d.dy==Tgty) {
 				success = true;
 				board.replace(Tgtx, Tgty, this, this.xPos, this.yPos);
+				xPos = d.dx;
+				yPos = d.dy;
 			}
 		}
 		return success;

@@ -1,4 +1,4 @@
-package ChessBrickCopy;
+package chessBrick;
 import java.util.ArrayList;
 
 public class Board {
@@ -86,7 +86,7 @@ public class Board {
 	}
 
 	public void replace(int tgtx, int tgty, Piece p, int oldx, int oldy) {
-		remove(this.getPiece(tgtx, tgty));
+		if(this.getPiece(tgtx, tgty)!=null) remove(this.getPiece(tgtx, tgty));
 		board[tgtx][tgty] = p;
 		board[oldx][oldy] = null;
 	}
