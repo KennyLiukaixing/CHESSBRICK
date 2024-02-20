@@ -134,12 +134,36 @@ public class Game {
 			int x = filesToNum.get(notation.charAt(notation.length()-2));
 			int y = 7 - (int) notation.charAt(notation.length()-1);
 			ArrayList<Integer> coordinate = generateMove(Character.toLowerCase(notation.charAt(0)), x, y, b);
+			if (coordinate.size() > 2) {
+				if (Character.isLetter(notation.charAt(1))) {
+					int xc = filesToNum.get(notation.charAt(1));
+					for (int k = 0; k < coordinate.size(); k+=2) {
+						if (coordinate.get(k) == xc) {
+							b.board[coordinate.get(k)][coordinate.get(k+1)].makeMovePlayer(x, y);
+						}
+					}
+				} else {
+					int yc = 7 - (int) notation.charAt(1);
+					for (int k = 0; k < coordinate.size(); k+=2) {
+						if (coordinate.get(k) == yc) {
+							b.board[coordinate.get(k-1)][coordinate.get(k)].makeMovePlayer(x, y);
+						}
+					}
+				}
+			} else {
+				b.board[coordinate.get(0)][coordinate.get(1)].makeMovePlayer(x, y);
+			}
+		} else {
+			coordinates[0][0] = -1;
+			coordinates[0][1] = -1;
+			coordinates[1][0] = -1;
+			coordinates[1][1] = -1;
+			return coordinates;
 		}
 
 
 		/*
 		 * Possibilities: Ne8, Nxe4, Nbxd4, N5xd4, Nbd7
-	     * Qh5+, Qh5#, Qxh5#
 		 */
 
 		// Step 3: check if legal move
