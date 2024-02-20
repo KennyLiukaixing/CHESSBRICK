@@ -146,13 +146,16 @@ public class Game {
 					int yc = 7-Character.getNumericValue(notation.charAt(1))+1;
 
 					for (int k = 0; k < coordinate.size(); k+=2) {
-						if (coordinate.get(k) == yc) {
+						if (coordinate.get(k) == yc && unNull(b.board[coordinate.get(k-1)][coordinate.get(k)])) {
 							b.board[coordinate.get(k-1)][coordinate.get(k)].makeMovePlayer(x, y);
 						}
 					}
 				}
 			} else {
-				b.board[coordinate.get(0)][coordinate.get(1)].makeMovePlayer(x, y);
+				if (unNull(b.board[coordinate.get(0)][coordinate.get(1)])) {
+					b.board[coordinate.get(0)][coordinate.get(1)].makeMovePlayer(x, y);
+				}
+				
 			}
 		} else {
 			return false;
