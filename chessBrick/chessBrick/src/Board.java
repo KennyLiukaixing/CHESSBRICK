@@ -8,11 +8,27 @@ public class Board {
 	public Board() {
 
 	}
+	// WHITE: Positive Better
+	// BLACK: Negative Better
+	public float evalBoard(){
+		float matStat = 0;
+		for(Piece p: onBoard){
+			char c = p.tag;
+			if(c=='n'||c=='q'||c=='b'||c=='r'||c=='k'||c=='p'){
+				matStat -= p.mat;
+			}
+			matStat += p.mat;
+			for(DeltaMovement d:p.legalMoves()){
+				if(d.ext) matStat += 0.1*board[d.dx][d.dy].mat;
+				else matStat += 0.1;
+			}
+		}
+		return matStat;
+	}
 
 	// WHITE: r
 	// BLACK: R
 	// Something broke here but ima leave it as is because I dont want to fix it
-	// TODO: realized that pawn behavior has to change a lot
 	public void makeDefault() {
 		board[0][7] = new Rook(0, 7, 'r', this);
 		board[7][7] = new Rook(7, 7, 'r', this);

@@ -1,8 +1,11 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.*;
 
 public class Game {
+
+	public static boolean isPlayerTurn = true;
 	public static void printBoard(Board board) {
 		System.out.println();
 		System.out.println("  0 1 2 3 4 5 6 7");
@@ -24,7 +27,6 @@ public class Game {
 				new InputStreamReader(System.in));
 		Board b = new Board();
 		b.makeDefault();
-		boolean isPlayerTurn = true;
 		while (true) {
 			printBoard(b);
 			if (isPlayerTurn) {
@@ -53,16 +55,97 @@ public class Game {
 
 	public static int[][] notation(String notation, Board b) {
 		// Step 1: convert human notation into coordinates
+		int[][] coordinates = new int[2][2];
+		if (notation.length() < 2) {
+			coordinates[0][0] = -1;
+			coordinates[0][1] = -1;
+			coordinates[1][0] = -1;
+			coordinates[1][1] = -1;
+			return coordinates;
+		}
+		
+		for (int i = 0; i < notation.length(); i++) {
+			if (notation.charAt(i) == ' ') {
+				notation = notation.substring(0,i) + notation.substring(i+1, notation.length());
+				i--;
+			}
+		}
+
+
+		int[] ranks = {0,1,2,3,4,5,6,7};
+
+		char[] files = {'a','b','c','d','e','f','g','h'};
+		Map<Character, Integer> filesToNum = new HashMap<>();
+
+		filesToNum.put('a', 0);
+		filesToNum.put('b', 1);
+		filesToNum.put('c', 2);
+		filesToNum.put('d', 3);
+		filesToNum.put('e', 4);
+		filesToNum.put('f', 5);
+		filesToNum.put('g', 6);
+		filesToNum.put('h', 7);
+
+
+		if (isLower(notation.charAt(0))) {
+			int xcoord = filesToNum.get(notation.charAt(0));
+			int ycoord = 7 - (int) notation.charAt(1);
+			
+			if (notation.charAt(notation.length()-2) == '=') {
+				for (int i= -1; i <= 1; i++) {
+					if ((xcoord + i < 8 && xcoord + i >= 0) && b.board[xcoord+i][6].makeMovePlayer(xcoord, ycoord)) {
+						char newPiece = notation.charAt(notation.length()-1);
+						if (newPiece == 'N') {
+							b.board[xcoord+i][7] = new Knight(xcoord+i, 7, 'n', b);
+						} else if (newPiece == 'Q') {
+							b.board[xcoord+i][7] = new Queen(xcoord+i, 7, 'q', b);
+						} else if (newPiece == 'R') {
+							b.board[xcoord+i][7] = new Rook(xcoord+i, 7, 'r', b);
+						} else {
+							b.board[xcoord+i][7] = new Bishop(xcoord+i, 7, 'b', b);
+						}
+						break;
+					}
+				}
+			}
+			else if (notation.charAt(1) == 'x') {
+				if ((xcoord > 0 && b.board[xcoord-1][ycoord-1].makeMovePlayer(xcoord, ycoord)) || (xcoord < 7 && b.board[xcoord-1][ycoord+1].makeMovePlayer(xcoord, ycoord))) {
+					isPlayerTurn = false;
+				}
+			}  else {
+				for (int i = -2; i < 0; i++) {
+					if (b.board[xcoord+i][ycoord].makeMovePlayer(xcoord, ycoord)) {
+						isPlayerTurn = false;
+					}
+				}
+			}
+		}
+		
+
 
 		// Step 2: handle promotion
+		/*
+		 * Possibilities: Ne8, e4, Nxe4, Nbxd4, N5xd4, e8=N, exd4, exd4 (en passant),
+	     * Qh5+, Qh5#, Qxh5#, e8=N+, exd8+=R, O-O, O-O-O.
+		 */
 
 		// Step 3: check if legal move
 
+
+
+		return coordinates;
 	}
 
-	public int quickEval(Board b) {
+	/*public int quickEval(Board b) {
 		// player
-	}
+	}*/
+
+	public static boolean isLower(char c) {
+        // Check if the character is lowercase by comparing it with its lowercase counterpart
+        return (c >= 'a' && c <= 'z');
+    }
+
+
 
 	/*
 	 * TODO:
@@ -106,6 +189,7 @@ public class Game {
 	 * -two kings cannot touch (IMPORTANT)
 	 * -castling
 	 * -check
+	 * 
 	 * 
 	 * Check:
 	 * - Just restrict the legal moves to those that don't leave the king under attack. We will have to rotate through the enemy pieces'

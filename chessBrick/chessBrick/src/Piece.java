@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 public abstract class Piece {
+	public int mat;
 	public boolean moved = false;
 	public char tag;
 	public Board board;
@@ -75,7 +76,7 @@ public abstract class Piece {
 				}
 			}
 			for (DeltaMovement d : captureMoves) {
-				if (!(xPos + d.dx < 0 || xPos + d.dx > 7 || yPos + d.dy < 0 || yPos + d.dy > 7) {
+				if (!(xPos + d.dx < 0 || xPos + d.dx > 7 || yPos + d.dy < 0 || yPos + d.dy > 7)) {
 					if (!board.isEmpty(xPos + d.dx, yPos + d.dy)) {
 						System.out.println("a");
 						legals.add(

@@ -9,6 +9,13 @@
             "name": "Game",
             "request": "launch",
             "mainClass": "Game",
+            "projectName": "chessBrick_d5b88a25"
+        },
+        {
+            "type": "java",
+            "name": "Game",
+            "request": "launch",
+            "mainClass": "Game",
             "projectName": "chessBrick_bf794e65"
         }
     ]
