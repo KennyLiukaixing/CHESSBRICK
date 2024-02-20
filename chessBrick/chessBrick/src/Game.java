@@ -29,6 +29,7 @@ public class Game {
 		b.makeDefault();
 		while (true) {
 			printBoard(b);
+			b.evalBoard();
 			if (isPlayerTurn) {
 				System.out.println("Please type inputs as curX,curY;tgtX,tgtY, eg. 1,2;3,4");
 				String s = reader.readLine();

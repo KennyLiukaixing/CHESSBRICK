@@ -64,7 +64,7 @@ public abstract class Piece {
 				if (xPos + d.dx < 0 || xPos + d.dx > 7 || yPos + d.dy < 0 || yPos + d.dy > 7) {
 					// do nothing
 				} else if (yPos + d.dy == 7 || yPos + d.dy == 0) {
-					promote();
+					//promote();
 				} else {
 					if (board.isEmpty(xPos + d.dx, yPos + d.dy))
 						legals.add(
@@ -77,12 +77,12 @@ public abstract class Piece {
 			}
 			for (DeltaMovement d : captureMoves) {
 				if (!(xPos + d.dx < 0 || xPos + d.dx > 7 || yPos + d.dy < 0 || yPos + d.dy > 7)) {
-					if (!board.isEmpty(xPos + d.dx, yPos + d.dy)) {
-						System.out.println("a");
+					if (!board.isEmpty(xPos + d.dx, yPos + d.dy)&&
+							(!board.sameSide(this, board.board[xPos+d.dx][yPos+d.dy]))) {
 						legals.add(
 								new DeltaMovement(xPos + d.dx, yPos + d.dy));
-						if (yPos + d.dy == 7 || yPos + d.dy == 0)
-							promote();
+						if (yPos + d.dy == 7 || yPos + d.dy == 0) {}
+							//promote();
 					}
 				}
 			}

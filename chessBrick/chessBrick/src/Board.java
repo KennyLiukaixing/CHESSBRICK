@@ -14,15 +14,32 @@ public class Board {
 		float matStat = 0;
 		for(Piece p: onBoard){
 			char c = p.tag;
-			if(c=='n'||c=='q'||c=='b'||c=='r'||c=='k'||c=='p'){
+			if(c=='r'||c=='n'||c=='b'||c=='q'||c=='k'||c=='p'){
 				matStat -= p.mat;
+				for(DeltaMovement d:p.legalMoves()){
+					if(d.ext) {
+						matStat -= 0.1*board[d.dx][d.dy].mat;
+					}
+					else {
+						//System.out.println(p);
+						matStat -= 0.1;
+					}
+				}
 			}
-			matStat += p.mat;
-			for(DeltaMovement d:p.legalMoves()){
-				if(d.ext) matStat += 0.1*board[d.dx][d.dy].mat;
-				else matStat += 0.1;
+			else{
+				matStat += p.mat;
+				for(DeltaMovement d:p.legalMoves()){
+					if(d.ext) {
+						matStat += 0.1*board[d.dx][d.dy].mat;
+					}
+					else {
+						//System.out.println(p + " " + d.dx + " "+ d.dy);
+						matStat += 0.1;
+					}
+				}
 			}
 		}
+		System.out.println(matStat);
 		return matStat;
 	}
 
@@ -67,6 +84,12 @@ public class Board {
 		board[5][6] = new Pawn(5, 6, 'p', this);
 		board[6][6] = new Pawn(6, 6, 'p', this);
 		board[7][6] = new Pawn(7, 6, 'p', this);
+		
+		for(int i = 0;i<8;i++) {
+			for(int j = 0;j<8;j++) {
+				if(board[i][j]!=null) onBoard.add(board[i][j]);
+			}
+		}
 	}
 
 	public boolean isEmpty(int x, int y) {
