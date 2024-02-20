@@ -121,13 +121,20 @@ public class Game {
 				}
 			}
 		}
-		
+		else if (notation.equals("O-O")) {
+			b.board[4][7].makeMovePlayer(6, 7);
+		}
+		else if (notation.equals("O-O-O")) {
+			b.board[4][7].makeMovePlayer(2, 7);
+		}
+		else if (Character.isLetter(notation.charAt(0))) {
+
+		}
 
 
-		// Step 2: handle promotion
 		/*
-		 * Possibilities: Ne8, e4, Nxe4, Nbxd4, N5xd4, e8=N, exd4, exd4 (en passant),
-	     * Qh5+, Qh5#, Qxh5#, e8=N+, exd8+=R, O-O, O-O-O.
+		 * Possibilities: Ne8, Nxe4, Nbxd4, N5xd4, Nbd7
+	     * Qh5+, Qh5#, Qxh5#
 		 */
 
 		// Step 3: check if legal move
