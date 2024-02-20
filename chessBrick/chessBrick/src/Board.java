@@ -12,11 +12,13 @@ public class Board {
 	// BLACK: Negative Better
 	public float evalBoard(){
 		float matStat = 0;
-		for(Piece p: onBoard){
+		for(int j = 0; j < onBoard.size(); j++) {
+			Piece p = onBoard.get(j);
 			char c = p.tag;
 			if(c=='r'||c=='n'||c=='b'||c=='q'||c=='k'||c=='p'){
 				matStat -= p.mat;
-				for(DeltaMovement d:p.legalMoves()){
+				for(int i = 0; i < p.legalMoves().size(); i++) {
+					DeltaMovement d = p.legalMoves().get(i);
 					if(d.ext) {
 						matStat -= 0.1*board[d.dx][d.dy].mat;
 					}
@@ -28,7 +30,8 @@ public class Board {
 			}
 			else{
 				matStat += p.mat;
-				for(DeltaMovement d:p.legalMoves()){
+				for(int i = 0; i < p.legalMoves().size(); i++){
+					DeltaMovement d = p.legalMoves().get(i);
 					if(d.ext) {
 						matStat += 0.1*board[d.dx][d.dy].mat;
 					}

@@ -128,7 +128,12 @@ public class Game {
 			b.board[4][7].makeMovePlayer(2, 7);
 		}
 		else if (Character.isLetter(notation.charAt(0))) {
-
+			if (!Character.isDigit(notation.charAt(notation.length()-1))) {
+				notation = notation.substring(0, notation.length()-1);
+			}
+			int x = filesToNum.get(notation.charAt(notation.length()-2));
+			int y = 7 - (int) notation.charAt(notation.length()-1);
+			ArrayList<Integer> coordinate = generateMove(Character.toLowerCase(notation.charAt(0)), x, y, b);
 		}
 
 
@@ -152,6 +157,32 @@ public class Game {
         // Check if the character is lowercase by comparing it with its lowercase counterpart
         return (c >= 'a' && c <= 'z');
     }
+
+	public static boolean isValid(int x, int y) {
+		if (x < 8 && y < 8) {
+			return true;
+		}
+		return false;
+	}
+
+	public static ArrayList<Integer> generateMove(char tag, int x, int y, Board b) {
+		ArrayList<Integer> coordinates = new ArrayList<>();
+		for (int i = 0; i < b.onBoard.size(); i++) {
+			for (int j = 0; j < b.onBoard.get(i).moves.size(); i++) {
+				if (b.onBoard.get(i).tag == tag) {
+					ArrayList<DeltaMovement> possible = b.onBoard.get(i).legalMoves();
+					for (int k = 0; k < possible.size(); k++) {
+						if (possible.get(i).dx == x && possible.get(i).dy == y) {
+							coordinates.add(b.onBoard.get(i).xPos);
+							coordinates.add(b.onBoard.get(i).xPos);
+						}
+					}
+				}
+				
+			}
+		}
+		return coordinates;
+	}
 
 
 
