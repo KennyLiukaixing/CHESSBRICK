@@ -64,7 +64,7 @@ public abstract class Piece {
 				if (xPos + d.dx < 0 || xPos + d.dx > 7 || yPos + d.dy < 0 || yPos + d.dy > 7) {
 					// do nothing
 				} else if (yPos + d.dy == 7 || yPos + d.dy == 0) {
-					promote();
+					//promote();
 				} else {
 					if (board.isEmpty(xPos + d.dx, yPos + d.dy))
 						legals.add(
@@ -82,7 +82,7 @@ public abstract class Piece {
 						legals.add(
 								new DeltaMovement(xPos + d.dx, yPos + d.dy));
 						if (yPos + d.dy == 7 || yPos + d.dy == 0) {}
-							promote();
+							//promote();
 					}
 				}
 			}

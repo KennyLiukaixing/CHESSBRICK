@@ -43,7 +43,8 @@ public class Game {
 					isPlayerTurn = false;
 				}*/
 			} else {
-				for (Piece p : b.onBoard) {
+				for (int i = 0; i < b.onBoard.size(); i++) {
+					Piece p = b.onBoard.get(i);
 					for (DeltaMovement d : p.legalMoves()) {
 						if (Math.random() > 0.8) {
 							// p.makeMove(d.dx, d.dy);
@@ -56,7 +57,7 @@ public class Game {
 	}
 
 	public static boolean notation(String notation, Board b) {
-		// Step 1: convert human notation into coordinates
+
 		if (notation.length() < 2) {
 			return false;
 		}
@@ -73,31 +74,42 @@ public class Game {
 		filesToNum.put('g', 6);
 		filesToNum.put('h', 7);
 
+		if (!Character.isLetterOrDigit(notation.charAt(notation.length()-1))) {
+			notation = notation.substring(0, notation.length()-1);
+		}
 
 		if (Character.isLowerCase(notation.charAt(0))) {
-			int xcoord = filesToNum.get(notation.charAt(0));
-			int ycoord = 7 - Character.getNumericValue(notation.charAt(1)) + 1;
-			
+			int xcoord, ycoord;
+			System.out.println(notation.charAt(notation.length()-2));
+			if (notation.charAt(notation.length()-2) == '=') {
+				xcoord = filesToNum.get(notation.charAt(notation.length()-4));
+				ycoord = 7 - Character.getNumericValue(notation.charAt(notation.length()-3)) + 1;
+			} else {
+				xcoord = filesToNum.get(notation.charAt(notation.length()-2));
+				ycoord = 7 - Character.getNumericValue(notation.charAt(notation.length()-1)) + 1;
+			}
 			
 			if (notation.charAt(notation.length()-2) == '=') {
+				
+				System.out.println(xcoord + " " + ycoord);
 				for (int i= -1; i <= 1; i++) {
-					if ((xcoord + i < 8 && xcoord + i >= 0) && unNull(b.board[xcoord+i][6]) && b.board[xcoord+i][6].makeMovePlayer(xcoord, ycoord)) {
+					if ((xcoord + i < 8 && xcoord + i >= 0) && unNull(b.board[xcoord+i][1]) && b.board[xcoord+i][1].makeMovePlayer(xcoord, ycoord)) {
 						char newPiece = notation.charAt(notation.length()-1);
 						if (newPiece == 'N') {
-							b.board[xcoord+i][7] = new Knight(xcoord+i, 7, 'n', b);
+							b.board[xcoord+i][0] = new Knight(xcoord+i, 0, 'n', b);
 						} else if (newPiece == 'Q') {
-							b.board[xcoord+i][7] = new Queen(xcoord+i, 7, 'q', b);
+							b.board[xcoord+i][0] = new Queen(xcoord+i, 0, 'q', b);
 						} else if (newPiece == 'R') {
-							b.board[xcoord+i][7] = new Rook(xcoord+i, 7, 'r', b);
+							b.board[xcoord+i][0] = new Rook(xcoord+i, 0, 'r', b);
 						} else {
-							b.board[xcoord+i][7] = new Bishop(xcoord+i, 7, 'b', b);
+							b.board[xcoord+i][0] = new Bishop(xcoord+i, 0, 'b', b);
 						}
 						break;
 					}
 				}
 			}
 			else if (notation.charAt(1) == 'x') {
-				if ((unNull(b.board[xcoord-1][ycoord-1]) && xcoord > 0 && b.board[xcoord-1][ycoord-1].makeMovePlayer(xcoord, ycoord)) || (unNull(b.board[xcoord-1][ycoord+1]) && xcoord < 7 && b.board[xcoord-1][ycoord+1].makeMovePlayer(xcoord, ycoord))) {
+				if ((unNull(b.board[xcoord-1][ycoord+1]) && xcoord > 0 && b.board[xcoord-1][ycoord+1].makeMovePlayer(xcoord, ycoord)) || (unNull(b.board[xcoord+1][ycoord+1]) && xcoord < 7 && b.board[xcoord+1][ycoord+1].makeMovePlayer(xcoord, ycoord))) {
 					isPlayerTurn = false;
 				}
 			}  else {
@@ -115,9 +127,7 @@ public class Game {
 			b.board[4][7].makeMovePlayer(2, 7);
 		}
 		else if (Character.isLetter(notation.charAt(0))) {
-			if (!Character.isDigit(notation.charAt(notation.length()-1))) {
-				notation = notation.substring(0, notation.length()-1);
-			}
+			
 			int x = filesToNum.get(notation.charAt(notation.length()-2));
 			int y = 7-Character.getNumericValue(notation.charAt(notation.length() - 1))+1;
 
@@ -165,13 +175,17 @@ public class Game {
 
 	public static ArrayList<Integer> generateMove(char tag, int x, int y, Board b) {
 		ArrayList<Integer> coordinates = new ArrayList<>();
+
 		for (int i = 0; i < b.onBoard.size(); i++) {
+
 			if (b.onBoard.get(i).tag == tag) {
 				ArrayList<DeltaMovement> possible = b.onBoard.get(i).legalMoves();
+
 				for (int k = 0; k < possible.size(); k++) {
+
 					if (possible.get(k).dx == x && possible.get(k).dy == y) {
 						coordinates.add(b.onBoard.get(i).xPos);
-						coordinates.add(b.onBoard.get(i).xPos);
+						coordinates.add(b.onBoard.get(i).yPos);
 					}
 				}
 			}
@@ -189,7 +203,6 @@ public class Game {
 
 
 	/*
-	 * TODO:
 	 * 
 	 * 
 	 * Castling: add to legal moves a boolean whether the king has moved, after that
