@@ -6,6 +6,8 @@ import java.util.*;
 public class Game {
 
 	public static boolean isPlayerTurn = true;
+
+
 	public static void printBoard(Board board) {
 		System.out.println();
 		System.out.println("  0 1 2 3 4 5 6 7");
@@ -22,26 +24,37 @@ public class Game {
 		}
 	}
 
+	public static void printGood(Board board) {
+		System.out.println();
+		System.out.println("   -----------------");
+		for (int i = 8; i > 0; i--) {
+
+			System.out.print(i + " | ");
+
+			for (int j = 0; j < 8; j++) {
+				if (board.board[j][8-i] != null)
+					System.out.print(board.board[j][8-i].tag);
+				else
+					System.out.print(' ');
+				System.out.print(" ");
+			}
+			System.out.println("|");
+		}
+		System.out.println("   -----------------");
+		System.out.println("    a b c d e f g h");
+	}
+
 	public static void main(String[] args) throws IOException {
 		BufferedReader reader = new BufferedReader(
 				new InputStreamReader(System.in));
 		Board b = new Board();
 		b.makeDefault();
 		while (true) {
-			printBoard(b);
+			printGood(b);
 			b.evalBoard();
 			if (isPlayerTurn) {
-				//System.out.println("Please type inputs as curX,curY;tgtX,tgtY, eg. 1,2;3,4");
 				String s = reader.readLine();
 				notation(s, b);
-				/*int curX, curY, tgtX, tgtY;
-				curX = s.charAt(0) - 48;
-				curY = s.charAt(2) - 48;
-				tgtX = s.charAt(4) - 48;
-				tgtY = s.charAt(6) - 48;
-				if (b.board[curX][curY].makeMovePlayer(tgtX, tgtY)) {
-					isPlayerTurn = false;
-				}*/
 			} else {
 				for (int i = 0; i < b.onBoard.size(); i++) {
 					Piece p = b.onBoard.get(i);
