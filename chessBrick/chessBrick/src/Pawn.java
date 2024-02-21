@@ -13,7 +13,7 @@ public class Pawn extends Piece {
 		} else
 			moves.addAll(Arrays.asList(
 					new DeltaMovement(0, -1)));
-		captureMoves.addAll(Arrays.asList(
+			captureMoves.addAll(Arrays.asList(
 				new DeltaMovement(-1, -1),
 				new DeltaMovement(1, -1)));
 		xPos = x;

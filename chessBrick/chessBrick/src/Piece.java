@@ -131,8 +131,10 @@ public abstract class Piece {
 						legals.add(
 								new DeltaMovement(xPos + d.dx, yPos + d.dy));
 					if (moved == false) {
-						legals.add(
+						if(board.isEmpty(xPos + d.dx*2, yPos + d.dy*2)){
+							legals.add(
 								new DeltaMovement(xPos + d.dx * 2, yPos + d.dy * 2));
+						}
 					}
 				}
 			}
@@ -190,7 +192,7 @@ public abstract class Piece {
 				if (!isKingUnderAttack('W', kingPos.dx, kingPos.dy, temp)) {
 					legals.add(move);
 				}
-				else System.out.println(kingPos.dx+" "+kingPos.dy);
+				else{} //System.out.println(kingPos.dx+" "+kingPos.dy);
 
 			} else {
 
@@ -215,9 +217,11 @@ public abstract class Piece {
 				for (DeltaMovement move : piece.legalMoves()) {
 					int newX = move.dx;
 					int newY = move.dy;
+					
 					//sussssss
 					// If the piece can reach the king position, return true
 					if (newX == x && newY == y) {
+						//System.out.println(newX + " " + newY + " " + piece.tag);
 						return true;
 					}
 				}
