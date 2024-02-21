@@ -8,6 +8,37 @@ public class Board {
 	public Board() {
 
 	}
+
+	public Board(Board original) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Piece originalPiece = original.board[i][j];
+                if (originalPiece != null) {
+                    Piece newPiece = null;
+                    // Clone the piece based on its type
+                    if (originalPiece instanceof Rook) {
+                        newPiece = new Rook(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
+                    } else if (originalPiece instanceof Knight) {
+                        newPiece = new Knight(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
+                    } else if (originalPiece instanceof Bishop) {
+                        newPiece = new Bishop(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
+                    } else if (originalPiece instanceof Queen) {
+                        newPiece = new Queen(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
+                    } else if (originalPiece instanceof King) {
+                        newPiece = new King(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
+                    } else if (originalPiece instanceof Pawn) {
+                        newPiece = new Pawn(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
+                    }
+                    if (newPiece != null) {
+                        newPiece.moved = originalPiece.moved;
+                        this.board[i][j] = newPiece;
+                        this.onBoard.add(newPiece);
+                    }
+                }
+            }
+        }
+    }
+	
 	// WHITE: Positive Better
 	// BLACK: Negative Better
 	public float evalBoard() {
@@ -137,4 +168,31 @@ public class Board {
 		board[oldx][oldy] = null;
 	}
 
+
+	public int[] getKingPos(char WorB) {
+		int[] coords = new int[2];
+		if (WorB == 'W') {
+			for (int i = 0; i < 8; i++) {
+				for (int j = 0; j < 8; j++) {
+					if (board[i][j] != null && board[i][j].tag == 'k') {
+						coords[0] = i;
+						coords[1]= j;
+						return coords;
+					}
+				}
+			}
+		}
+		else {
+			for (int i = 0; i < 8; i++) {
+				for (int j = 0; j < 8; j++) {
+					if (board[i][j] != null && board[i][j].tag == 'K') {
+						coords[0] = i;
+						coords[1]= j;
+						return coords;
+					}
+				}
+			}
+		}
+		return null;
+	}
 }

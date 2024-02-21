@@ -5,11 +5,10 @@ public class Bishop extends Piece{
 		super(x, y, tag, board);
 		mat = 3;
 		moves.addAll(Arrays.asList(
-			new DeltaMovement(1,1,true),
-			new DeltaMovement(-1,1,true),
-			new DeltaMovement(-1,-1,true),
-			new DeltaMovement(1,-1,true)
-			
+			new DeltaMovement(1,1,true,false),
+			new DeltaMovement(-1,1,true,false),
+			new DeltaMovement(-1,-1,true,false),
+			new DeltaMovement(1,-1,true,false)
 		));
 		captureMoves.addAll(moves);
 		xPos = x;

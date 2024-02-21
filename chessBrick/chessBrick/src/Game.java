@@ -49,12 +49,13 @@ public class Game {
 				new InputStreamReader(System.in));
 		Board b = new Board();
 		b.makeDefault();
+		printBoard(b);
 		while (true) {
-			printGood(b);
 			b.evalBoard();
 			if (isPlayerTurn) {
 				String s = reader.readLine();
 				notation(s, b);
+				printBoard(b);
 			} else {
 				for (int i = 0; i < b.onBoard.size(); i++) {
 					Piece p = b.onBoard.get(i);
@@ -93,7 +94,6 @@ public class Game {
 
 		if (Character.isLowerCase(notation.charAt(0))) {
 			int xcoord, ycoord;
-			System.out.println(notation.charAt(notation.length()-2));
 			if (notation.charAt(notation.length()-2) == '=') {
 				xcoord = filesToNum.get(notation.charAt(notation.length()-4));
 				ycoord = 7 - Character.getNumericValue(notation.charAt(notation.length()-3)) + 1;
@@ -104,7 +104,6 @@ public class Game {
 			
 			if (notation.charAt(notation.length()-2) == '=') {
 				
-				System.out.println(xcoord + " " + ycoord);
 				for (int i= -1; i <= 1; i++) {
 					if ((xcoord + i < 8 && xcoord + i >= 0) && unNull(b.board[xcoord+i][1]) && b.board[xcoord+i][1].makeMovePlayer(xcoord, ycoord)) {
 						char newPiece = notation.charAt(notation.length()-1);
@@ -182,12 +181,7 @@ public class Game {
         return (c >= 'a' && c <= 'z');
     }
 
-	public static boolean isValid(int x, int y) {
-		if (x < 8 && y < 8) {
-			return true;
-		}
-		return false;
-	}
+	
 
 	public static ArrayList<Integer> generateMove(char tag, int x, int y, Board b) {
 		ArrayList<Integer> coordinates = new ArrayList<>();

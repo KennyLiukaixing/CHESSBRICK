@@ -1,5 +1,5 @@
 import java.util.Arrays;
-public class King extends Piece{
+public class King extends Piece {
 	public King(int x, int y, char tag, Board board) {
 		super(x,y,tag,board);
 		mat = 0;
