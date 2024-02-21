@@ -169,28 +169,10 @@ public class Board {
 	}
 
 
-	public int[] getKingPos(char WorB) {
-		int[] coords = new int[2];
-		if (WorB == 'W') {
-			for (int i = 0; i < 8; i++) {
-				for (int j = 0; j < 8; j++) {
-					if (board[i][j] != null && board[i][j].tag == 'k') {
-						coords[0] = i;
-						coords[1]= j;
-						return coords;
-					}
-				}
-			}
-		}
-		else {
-			for (int i = 0; i < 8; i++) {
-				for (int j = 0; j < 8; j++) {
-					if (board[i][j] != null && board[i][j].tag == 'K') {
-						coords[0] = i;
-						coords[1]= j;
-						return coords;
-					}
-				}
+	public DeltaMovement getKingPos(char WorB) {
+		for (Piece p : onBoard) {
+			if ((p.tag == 'k' && WorB == 'W') || (p.tag == 'K' && WorB == 'B')) {
+				return new DeltaMovement(p.xPos, p.yPos);
 			}
 		}
 		return null;

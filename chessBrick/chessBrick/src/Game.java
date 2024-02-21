@@ -59,7 +59,7 @@ public class Game {
 			} else {
 				for (int i = 0; i < b.onBoard.size(); i++) {
 					Piece p = b.onBoard.get(i);
-					for (DeltaMovement d : p.legalMoves()) {
+					for (DeltaMovement d : p.legalNoCheck()) {
 						if (Math.random() > 0.8) {
 							// p.makeMove(d.dx, d.dy);
 						}
