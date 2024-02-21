@@ -199,7 +199,6 @@ public abstract class Piece {
 			}
 			
 		}
-		
 		return legals;
 	}
 	
