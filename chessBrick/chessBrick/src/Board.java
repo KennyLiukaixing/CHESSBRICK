@@ -42,7 +42,7 @@ public class Board {
 	// WHITE: Positive Better
 	// BLACK: Negative Better
 	public float evalBoard() {
-		/*float matStat = 0;
+		float matStat = 0;
 		for(int j = 0; j < onBoard.size(); j++) {
 			Piece p = onBoard.get(j);
 			char c = p.tag;
@@ -73,7 +73,7 @@ public class Board {
 				}
 			}
 		}
-		System.out.println(matStat);*/
+		//System.out.println(matStat);
 		return 0;
 	}
 

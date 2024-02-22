@@ -35,7 +35,7 @@ public class Game {
 				if (board.board[j][8-i] != null)
 					System.out.print(board.board[j][8-i].tag);
 				else
-					System.out.print(' ');
+					System.out.print('#');
 				System.out.print(" ");
 			}
 			System.out.println("|");
@@ -53,22 +53,51 @@ public class Game {
 		while (true) {
 			b.evalBoard();
 			if (isPlayerTurn) {
+				printGood(b);
 				String s = reader.readLine();
 				notation(s, b);
-				printGood(b);
+				//TODO: illegal move shouldnt refresh AI
+				isPlayerTurn = false;
 			} else {
+				System.out.println("a");
+				DeltaMovement bestMove = null;
+				int max = -10000;
+				int bestx = 0;
+				int besty = 0;
+				Board temp;
+				Piece tempPiece;
+
 				for (int i = 0; i < b.onBoard.size(); i++) {
 					Piece p = b.onBoard.get(i);
-					for (DeltaMovement d : p.legalNoCheck()) {
-						if (Math.random() > 0.8) {
-							// p.makeMove(d.dx, d.dy);
+					if(!p.isWhite(p.tag)){
+						for (DeltaMovement d : p.legalNoCheck()) {
+							temp = new Board(b);//Deep copy board
+							tempPiece = temp.getPiece(p.xPos,p.yPos);//get temp piece from board
+							//save coordinates for the piece
+							int tempx,tempy;
+							tempx = p.xPos;
+							tempy = p.yPos;
+							tempPiece.forceMove(d.dx, d.dy);
+					
+							//change board for evaluation
+							if(temp.evalBoard()>max){
+								//save board info
+								bestMove = d;
+								bestx = tempx;
+								besty = tempy;
+								printBoard(temp);
+								//System.out.println(bestx+" "+besty+" "+temp.evalBoard());
+							}
 						}
 					}
 				}
+				System.out.println(b.evalBoard());
+				b.getPiece(bestx,besty).forceMove(bestMove.dx, bestMove.dy);
 				isPlayerTurn = true;
 			}
 		}
 	}
+
 
 	public static boolean notation(String notation, Board b) {
 

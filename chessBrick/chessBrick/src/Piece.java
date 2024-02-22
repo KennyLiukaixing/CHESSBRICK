@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public abstract class Piece {
 	public int mat;
@@ -25,6 +24,7 @@ public abstract class Piece {
 		board.replace(Tgtx,Tgty,this,this.xPos,this.yPos);
 		this.xPos = Tgtx;
 		this.yPos = Tgty;
+		moved = true;
 	}
 	public boolean makeMovePlayer(int Tgtx, int Tgty) {
 		legalNoCheck = legalNoCheck();
