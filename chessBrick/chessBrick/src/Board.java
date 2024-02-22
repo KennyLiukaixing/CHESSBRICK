@@ -10,71 +10,91 @@ public class Board {
 	}
 
 	public Board(Board original) {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                Piece originalPiece = original.board[i][j];
-                if (originalPiece != null) {
-                    Piece newPiece = null;
-                    // Clone the piece based on its type
-                    if (originalPiece instanceof Rook) {
-                        newPiece = new Rook(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
-                    } else if (originalPiece instanceof Knight) {
-                        newPiece = new Knight(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
-                    } else if (originalPiece instanceof Bishop) {
-                        newPiece = new Bishop(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
-                    } else if (originalPiece instanceof Queen) {
-                        newPiece = new Queen(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
-                    } else if (originalPiece instanceof King) {
-                        newPiece = new King(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
-                    } else if (originalPiece instanceof Pawn) {
-                        newPiece = new Pawn(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
-                    }
-                    if (newPiece != null) {
-                        newPiece.moved = originalPiece.moved;
-                        this.board[i][j] = newPiece;
-                        this.onBoard.add(newPiece);
-                    }
-                }
-            }
-        }
-    }
-	
-	// WHITE: Positive Better
-	// BLACK: Negative Better
-	public float evalBoard() {
-		float matStat = 0;
-		for(int j = 0; j < onBoard.size(); j++) {
-			Piece p = onBoard.get(j);
-			char c = p.tag;
-			if(p.isWhite(p.tag)){
-				matStat -= p.mat;
-				for(int i = 0; i < p.legalMoves().size(); i++) {
-					DeltaMovement d = p.legalMoves().get(i);
-					if(d.ext) {
-						matStat -= 0.5*board[d.dx][d.dy].mat;
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				Piece originalPiece = original.board[i][j];
+				if (originalPiece != null) {
+					Piece newPiece = null;
+					// Clone the piece based on its type
+					if (originalPiece instanceof Rook) {
+						newPiece = new Rook(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
+					} else if (originalPiece instanceof Knight) {
+						newPiece = new Knight(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
+					} else if (originalPiece instanceof Bishop) {
+						newPiece = new Bishop(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
+					} else if (originalPiece instanceof Queen) {
+						newPiece = new Queen(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
+					} else if (originalPiece instanceof King) {
+						newPiece = new King(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
+					} else if (originalPiece instanceof Pawn) {
+						newPiece = new Pawn(originalPiece.xPos, originalPiece.yPos, originalPiece.tag, this);
 					}
-					else {
-						//System.out.println(p);
-						matStat -= 0.5*p.mat;
-					}
-				}
-			}
-			else{
-				matStat += p.mat;
-				for(int i = 0; i < p.legalMoves().size(); i++){
-					DeltaMovement d = p.legalMoves().get(i);
-					if(d.ext) {
-						matStat += 0.5*board[d.dx][d.dy].mat;
-					}
-					else {
-						System.out.println(p + " " + d.dx + " "+ d.dy);
-						matStat += 0.5*p.mat;
+					if (newPiece != null) {
+						newPiece.moved = originalPiece.moved;
+						this.board[i][j] = newPiece;
+						this.onBoard.add(newPiece);
 					}
 				}
 			}
 		}
-		//System.out.println(matStat);
-		return 0;
+	}
+
+	public float evalBoard() {
+		float matStat = 0;
+		for (int j = 0; j < onBoard.size(); j++) {
+			Piece p = onBoard.get(j);
+			double fileWeights[] = { 0, 1, 1.1, 1.3, 1.5, 1.3, 1.1, 1 };
+			char c = p.tag;
+			if (p.isWhite(p.tag)) {
+				matStat -= p.mat * fileWeights[p.xPos];
+				for (int i = 0; i < p.legalMoves().size(); i++) {
+					DeltaMovement d = p.legalMoves().get(i);
+					if (d.ext) {
+						matStat -= 0.3 * board[d.dx][d.dy].mat;
+					} else {
+						matStat -= 0.3 * p.mat;
+					}
+				}
+			} else {
+				matStat += p.mat * fileWeights[p.xPos];
+				for (int i = 0; i < p.legalMoves().size(); i++) {
+					DeltaMovement d = p.legalMoves().get(i);
+					if (d.ext) {
+						matStat += 0.3 * board[d.dx][d.dy].mat;
+					} else {
+						System.out.println(p + " " + d.dx + " " + d.dy);
+						matStat += 0.3 * p.mat;
+					}
+				}
+			}
+		}
+		System.out.println(matStat);
+		return matStat;
+	}
+
+	public int checkmate(boolean isPlayerMove) {
+		if (isPlayerMove) {
+			for (Piece p : onBoard) {
+				if (Piece.isWhite(p.tag) && p.legalNoCheck().size() > 0) {
+					return 0;
+				}
+			}
+			DeltaMovement kingPos = getKingPos('W');
+			if (isKingUnderAttack('W', kingPos.dx, kingPos.dy, board)) {
+				return 1;
+			}
+				
+		} else {
+			for (Piece p : onBoard) {
+				if (!Piece.isWhite(p.tag) && p.legalNoCheck().size() > 0) {
+					return 0;
+				}
+			}
+			DeltaMovement kingPos = getKingPos('B');
+			if (isKingUnderAttack('B', kingPos.dx, kingPos.dy, board)) {
+				return -1;
+			}
+		}
 	}
 
 	// WHITE: r
@@ -118,10 +138,11 @@ public class Board {
 		board[5][6] = new Pawn(5, 6, 'p', this);
 		board[6][6] = new Pawn(6, 6, 'p', this);
 		board[7][6] = new Pawn(7, 6, 'p', this);
-		
-		for(int i = 0;i<8;i++) {
-			for(int j = 0;j<8;j++) {
-				if(board[i][j]!=null) onBoard.add(board[i][j]);
+
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if (board[i][j] != null)
+					onBoard.add(board[i][j]);
 			}
 		}
 	}
@@ -167,7 +188,6 @@ public class Board {
 		board[tgtx][tgty] = p;
 		board[oldx][oldy] = null;
 	}
-
 
 	public DeltaMovement getKingPos(char WorB) {
 		for (Piece p : onBoard) {

@@ -7,12 +7,13 @@ public class Game {
 
 	public static boolean isPlayerTurn = true;
 
-	class piecePosBundle{
+	class piecePosBundle {
 		public Piece p;
 		public DeltaMovement d;
 		public float boardScore;
 		public Board b;
-		public piecePosBundle(Piece p, DeltaMovement d, Board b, float score){
+
+		public piecePosBundle(Piece p, DeltaMovement d, Board b, float score) {
 			this.p = p;
 			this.d = d;
 			this.b = b;
@@ -44,8 +45,8 @@ public class Game {
 			System.out.print(i + " | ");
 
 			for (int j = 0; j < 8; j++) {
-				if (board.board[j][8-i] != null)
-					System.out.print(board.board[j][8-i].tag);
+				if (board.board[j][8 - i] != null)
+					System.out.print(board.board[j][8 - i].tag);
 				else
 					System.out.print(' ');
 				System.out.print(" ");
@@ -61,81 +62,84 @@ public class Game {
 				new InputStreamReader(System.in));
 		Board b = new Board();
 		b.makeDefault();
-		printGood(b);
 		while (true) {
-			b.evalBoard();
+			//b.evalBoard();
 			if (isPlayerTurn) {
 				printGood(b);
 				String s = reader.readLine();
-				notation(s, b);
-				//TODO: illegal move shouldnt refresh AI
-				if(notation(s, b)) isPlayerTurn = false;
+				if (notation(s, b)) isPlayerTurn = false;
 			} else {
-				System.out.println("a");
 				DeltaMovement bestMove = null;
-				int max = -10000;
+				double max = -10000;
 				int bestx = 0;
 				int besty = 0;
-				Board temp;
-				Piece tempPiece;
 
 				for (int i = 0; i < b.onBoard.size(); i++) {
 					Piece p = b.onBoard.get(i);
-					if(!p.isWhite(p.tag)){
-						for (DeltaMovement d : p.legalNoCheck()) {
-							temp = new Board(b);//Deep copy board
-							tempPiece = temp.getPiece(p.xPos,p.yPos);//get temp piece from board
-							//save coordinates for the piece
-							int tempx,tempy;
+					if (!Piece.isWhite(p.tag)) {
+						for (DeltaMovement dm : p.legalNoCheck()) {
+							Board temp = new Board(b);// Deep copy board
+							Piece tPiece = temp.getPiece(p.xPos, p.yPos);// get temp piece from board
+							// save coordinates for the piece
+							int tempx, tempy;
 							tempx = p.xPos;
 							tempy = p.yPos;
-							tempPiece.forceMove(d.dx, d.dy);
-					
-							//change board for evaluation
-							if(temp.evalBoard()>=max){
-								//save board info
-								bestMove = d;
+							tPiece.forceMove(dm.dx, dm.dy);
+
+							// change board for evaluation
+							if (temp.evalBoard() >= max) {
+								// save board info
+								bestMove = dm;
 								bestx = tempx;
 								besty = tempy;
-								printBoard(temp);
-								//System.out.println(bestx+" "+besty+" "+temp.evalBoard());
+								max = temp.evalBoard();
+								//printBoard(temp);
+								// System.out.println(bestx+" "+besty+" "+temp.evalBoard());
 							}
 						}
 					}
 				}
 				
-				b.getPiece(bestx,besty).forceMove(bestMove.dx, bestMove.dy);
-				System.out.println(b.evalBoard());
+				b.getPiece(bestx, besty).forceMove(bestMove.dx, bestMove.dy);
+				System.out.println(bestx+" "+besty+" "+b.evalBoard());
+				printBoard(b);
 				isPlayerTurn = true;
 			}
 		}
 	}
 
-	public piecePosBundle minimax(int depth, boolean isAIturn, piecePosBundle bundle){
-		if(depth == 0){
-			return new piecePosBundle(bundle.p,bundle.d,bundle.b,bundle.b.evalBoard());
-		}
-		if(isAIturn){
-			float maxEval = -100000;
-			float eval = minimax(depth-1,false,new piecePosBundle(null, null, null, maxEval)).b.evalBoard();
-			maxEval = Math.max(maxEval,eval);
-		}
-		else{
-			float minEval = 1000000;
-			float eval = minimax(depth-1,true,new piecePosBundle(null, null, null, minEval)).b.evalBoard();
-			minEval = Math.min(minEval, eval);
-		}
-		return bundle;
-	}
+	/*
+	 * public piecePosBundle minimax(int depth, boolean isAIturn, piecePosBundle
+	 * newBundle, piecePosBundle oldMove){
+	 * if(depth == 0){
+	 * return new
+	 * piecePosBundle(newBundle.p,newBundle.d,newBundle.b,newBundle.b.evalBoard());
+	 * }
+	 * if(isAIturn){
+	 * float maxEval = -100000;
+	 * float eval = minimax(depth-1,false,new piecePosBundle(null, null, null,
+	 * maxEval)).b.evalBoard();
+	 * maxEval = Math.max(maxEval,eval);
+	 * }
+	 * else{
+	 * float minEval = 100000;
+	 * float eval = minimax(depth-1,true,new piecePosBundle(null, null, null,
+	 * minEval)).b.evalBoard();
+	 * minEval = Math.min(minEval, eval);
+	 * }
+	 * return bundle;
+	 * }
+	 */
 
 	public static boolean notation(String notation, Board b) {
 
 		if (notation.length() < 2) {
 			return false;
 		}
-		
+
 		notation = notation.replaceAll(" ", "");
-		Map<Character, Integer> filesToNum = new HashMap<>();
+		Map<Character, Integer>
+		filesToNum = new HashMap<>();
 
 		filesToNum.put('a', 0);
 		filesToNum.put('b', 1);
@@ -146,89 +150,92 @@ public class Game {
 		filesToNum.put('g', 6);
 		filesToNum.put('h', 7);
 
-		if (!Character.isLetterOrDigit(notation.charAt(notation.length()-1))) {
-			notation = notation.substring(0, notation.length()-1);
+		if (!Character.isLetterOrDigit(notation.charAt(notation.length() - 1))) {
+			notation = notation.substring(0, notation.length() - 1);
 		}
 
 		if (Character.isLowerCase(notation.charAt(0))) {
 			int xcoord, ycoord;
-			if (notation.charAt(notation.length()-2) == '=') {
-				xcoord = filesToNum.get(notation.charAt(notation.length()-4));
-				ycoord = 7 - Character.getNumericValue(notation.charAt(notation.length()-3)) + 1;
+			if (notation.charAt(notation.length() - 2) == '=') {
+				xcoord = filesToNum.get(notation.charAt(notation.length() - 4));
+				ycoord = 7 - Character.getNumericValue(notation.charAt(notation.length() - 3)) + 1;
 			} else {
-				xcoord = filesToNum.get(notation.charAt(notation.length()-2));
-				ycoord = 7 - Character.getNumericValue(notation.charAt(notation.length()-1)) + 1;
+				xcoord = filesToNum.get(notation.charAt(notation.length() - 2));
+				ycoord = 7 - Character.getNumericValue(notation.charAt(notation.length() - 1)) + 1;
 			}
-			
-			if (notation.charAt(notation.length()-2) == '=') {
-				
-				for (int i= -1; i <= 1; i++) {
-					if ((xcoord + i < 8 && xcoord + i >= 0) && unNull(b.board[xcoord+i][1]) && b.board[xcoord+i][1].makeMovePlayer(xcoord, ycoord)) {
-						char newPiece = notation.charAt(notation.length()-1);
-						if (newPiece == 'N') {
-							b.board[xcoord+i][0] = new Knight(xcoord+i, 0, 'n', b);
-						} else if (newPiece == 'Q') {
-							b.board[xcoord+i][0] = new Queen(xcoord+i, 0, 'q', b);
-						} else if (newPiece == 'R') {
-							b.board[xcoord+i][0] = new Rook(xcoord+i, 0, 'r', b);
-						} else {
-							b.board[xcoord+i][0] = new Bishop(xcoord+i, 0, 'b', b);
-						}
-						break;
-					}
-				}
-			}
-			else if (notation.charAt(1) == 'x') {
-				if ((unNull(b.board[xcoord-1][ycoord+1]) && xcoord > 0 && b.board[xcoord-1][ycoord+1].makeMovePlayer(xcoord, ycoord)) || (unNull(b.board[xcoord+1][ycoord+1]) && xcoord < 7 && b.board[xcoord+1][ycoord+1].makeMovePlayer(xcoord, ycoord))) {
-					isPlayerTurn = false;
-				}
-			}  else {
-				for (int i = -2; i < 0; i++) {
-					if (unNull(b.board[xcoord][ycoord-i]) && b.board[xcoord][ycoord-i].makeMovePlayer(xcoord, ycoord)) {
-						isPlayerTurn = false;
-					}
-				}
-			}
-		}
-		else if (notation.equals("O-O")) {
-			b.board[4][7].makeMovePlayer(6, 7);
-		}
-		else if (notation.equals("O-O-O")) {
-			b.board[4][7].makeMovePlayer(2, 7);
-		}
-		else if (Character.isLetter(notation.charAt(0))) {
-			
-			int x = filesToNum.get(notation.charAt(notation.length()-2));
-			int y = 7-Character.getNumericValue(notation.charAt(notation.length() - 1))+1;
 
+			if (notation.charAt(notation.length() - 2) == '=') {
+
+				for (int i = -1; i <= 1; i++) {
+					if ((xcoord + i < 8 && xcoord + i >= 0) && unNull(b.board[xcoord + i][1])
+							&& b.board[xcoord + i][1].makeMovePlayer(xcoord, ycoord)) {
+						char newPiece = notation.charAt(notation.length() - 1);
+						if (newPiece == 'N') {
+							b.board[xcoord + i][0] = new Knight(xcoord + i, 0, 'n', b);
+						} else if (newPiece == 'Q') {
+							b.board[xcoord + i][0] = new Queen(xcoord + i, 0, 'q', b);
+						} else if (newPiece == 'R') {
+							b.board[xcoord + i][0] = new Rook(xcoord + i, 0, 'r', b);
+						} else {
+							b.board[xcoord + i][0] = new Bishop(xcoord + i, 0, 'b', b);
+						}
+						return true;
+					}
+				}
+			} else if (notation.charAt(1) == 'x') {
+				if ((unNull(b.board[filesToNum.get(notation.charAt(0))][ycoord + 1]) && xcoord > 0
+						&& b.board[filesToNum.get(notation.charAt(0))][ycoord + 1].makeMovePlayer(xcoord, ycoord))) {
+					return true;
+				}
+			} else {
+				for (int i = -2; i < 0; i++) {
+					if (unNull(b.board[xcoord][ycoord - i])
+							&& b.board[xcoord][ycoord - i].makeMovePlayer(xcoord, ycoord)) {
+						return true;
+					}
+				}
+			}
+		} else if (notation.equals("O-O")) {
+			b.board[4][7].makeMovePlayer(6, 7);
+			return true;
+		} else if (notation.equals("O-O-O")) {
+			b.board[4][7].makeMovePlayer(2, 7);
+			return true;
+		} else if (Character.isLetter(notation.charAt(0))) {
+
+			int x = filesToNum.get(notation.charAt(notation.length() - 2));
+			int y = 7 - Character.getNumericValue(notation.charAt(notation.length() - 1)) + 1;
 
 			ArrayList<Integer> coordinate = generateMove(Character.toLowerCase(notation.charAt(0)), x, y, b);
 			if (coordinate.size() > 2) {
 				if (Character.isLetter(notation.charAt(1))) {
 					int xc = filesToNum.get(notation.charAt(1));
 
-					for (int k = 0; k < coordinate.size(); k+=2) {
+					for (int k = 0; k < coordinate.size(); k += 2) {
 						if (coordinate.get(k) == xc) {
-							b.board[coordinate.get(k)][coordinate.get(k+1)].makeMovePlayer(x, y);
+							b.board[coordinate.get(k)][coordinate.get(k + 1)].makeMovePlayer(x, y);
+							return true;
 						}
 					}
 				} else {
-					int yc = 7-Character.getNumericValue(notation.charAt(1))+1;
+					int yc = 7 - Character.getNumericValue(notation.charAt(1)) + 1;
 
-					for (int k = 0; k < coordinate.size(); k+=2) {
-						if (coordinate.get(k) == yc && unNull(b.board[coordinate.get(k-1)][coordinate.get(k)])) {
-							b.board[coordinate.get(k-1)][coordinate.get(k)].makeMovePlayer(x, y);
+					for (int k = 0; k < coordinate.size(); k += 2) {
+						if (coordinate.get(k) == yc && unNull(b.board[coordinate.get(k - 1)][coordinate.get(k)])) {
+							b.board[coordinate.get(k - 1)][coordinate.get(k)].makeMovePlayer(x, y);
+							return true;
 						}
 					}
 				}
 			} else {
-				if(coordinate.size()>0){
+				if (coordinate.size() > 0) {
 					if (unNull(b.board[coordinate.get(0)][coordinate.get(1)])) {
 						b.board[coordinate.get(0)][coordinate.get(1)].makeMovePlayer(x, y);
+						return true;
 					}
-					
-				}
-				else return false;
+
+				} else
+					return false;
 			}
 			return false;
 		} else {
@@ -239,11 +246,10 @@ public class Game {
 	}
 
 	public static boolean isLower(char c) {
-        // Check if the character is lowercase by comparing it with its lowercase counterpart
-        return (c >= 'a' && c <= 'z');
-    }
-
-	
+		// Check if the character is lowercase by comparing it with its lowercase
+		// counterpart
+		return (c >= 'a' && c <= 'z');
+	}
 
 	public static ArrayList<Integer> generateMove(char tag, int x, int y, Board b) {
 		ArrayList<Integer> coordinates = new ArrayList<>();
@@ -272,8 +278,6 @@ public class Game {
 		return true;
 	}
 
-
-
 	/*
 	 * 
 	 * 
@@ -288,13 +292,15 @@ public class Game {
 	 * by checking, right after a pawn moves two squares, whether there
 	 * are any enemy pawns to the two squares left and right. Then, we add en
 	 * passant as a move to the enemy legal moves because it is guaranteed that
-	 * the square behind is empty, and en passant is a possibility in this case. Maybe call an en passant method.
+	 * the square behind is empty, and en passant is a possibility in this case.
+	 * Maybe call an en passant method.
 	 * 
 	 * Promotion:
 	 * Check for this in the notation. If you see an e8=Q, for example, you need to
 	 * change the tag to the index 3, depending upper or lowercase on whose move it
 	 * is. You move the pawn to e8 if it is legal, and change it to a different
-	 * piece. Change the promotion function to take input the type of piece promoting to.
+	 * piece. Change the promotion function to take input the type of piece
+	 * promoting to.
 	 * 
 	 * Notation:
 	 * Possibilities: Ne8, e4, Nxe4, Nbxd4, N5xd4, e8=N, exd4, exd4 (en passant),
@@ -302,11 +308,14 @@ public class Game {
 	 * 
 	 * - First, eliminate all spaces in the input string.
 	 * - convert file names to numbers.
-	 * - search each of your pieces legal moves to find the one that can work. Use the file name in, for example, Nbxd4,
+	 * - search each of your pieces legal moves to find the one that can work. Use
+	 * the file name in, for example, Nbxd4,
 	 * to search only that file.
-	 * This means check if it is a legal move (depends on the legal move function working properly and including checks, etc.)
+	 * This means check if it is a legal move (depends on the legal move function
+	 * working properly and including checks, etc.)
 	 * If not, reprompt the user.
-	 * - Handle en passant if it is a legal move (these things handled in the legal move function), handle promotion (handled 
+	 * - Handle en passant if it is a legal move (these things handled in the legal
+	 * move function), handle promotion (handled
 	 * in the promotion function).
 	 * 
 	 * 
@@ -318,27 +327,36 @@ public class Game {
 	 * 
 	 * 
 	 * Check:
-	 * - Just restrict the legal moves to those that don't leave the king under attack. We will have to rotate through the enemy pieces'
-	 * legal moves to check if one of them is the king square. Eliminate moves that leave the king in check or move the king into a new
-	 * check by checking legal moves each time. Figure out how to do this more efficiently than n^2.
+	 * - Just restrict the legal moves to those that don't leave the king under
+	 * attack. We will have to rotate through the enemy pieces'
+	 * legal moves to check if one of them is the king square. Eliminate moves that
+	 * leave the king in check or move the king into a new
+	 * check by checking legal moves each time. Figure out how to do this more
+	 * efficiently than n^2.
 	 * 
 	 * Checkmate:
-	 * - In the check function, if we notice that we don't have any legal moves such that the king is not in check, we're done for.
+	 * - In the check function, if we notice that we don't have any legal moves such
+	 * that the king is not in check, we're done for.
 	 * 
 	 * Stalemate:
 	 * - If our legal moves are empty, but our king is not in check.
 	 * 
 	 * 50-move rule:
-	 * Keep a counter of how many moves have passed without a capture or pawn move. If this reaches 100 (a move consists of your move
-	 * and your opponent's move, not just a single 'move'), set a draw. Reset the counter every time a capture or pawn moves.
+	 * Keep a counter of how many moves have passed without a capture or pawn move.
+	 * If this reaches 100 (a move consists of your move
+	 * and your opponent's move, not just a single 'move'), set a draw. Reset the
+	 * counter every time a capture or pawn moves.
 	 * 
 	 * 3-move repetition:
-	 * Important, does not need to be consecutive. That makes it difficult. Just save all the boards and compare them against each other.
-	 * This is too much run time though. Maybe have the AI ignore special draws and instead check if it is going to play the same move three times,
-	 * and if the eval says the engine is better, don't play that move. 
+	 * Important, does not need to be consecutive. That makes it difficult. Just
+	 * save all the boards and compare them against each other.
+	 * This is too much run time though. Maybe have the AI ignore special draws and
+	 * instead check if it is going to play the same move three times,
+	 * and if the eval says the engine is better, don't play that move.
 	 * 
 	 * Checkmate impossible:
-	 * Two kings are on the board. King vs king and knight, king vs. king and bishop. If these cases show up, call a draw.
+	 * Two kings are on the board. King vs king and knight, king vs. king and
+	 * bishop. If these cases show up, call a draw.
 	 * 
 	 */
 }
