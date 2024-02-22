@@ -7,6 +7,18 @@ public class Game {
 
 	public static boolean isPlayerTurn = true;
 
+	class piecePosBundle{
+		public Piece p;
+		public DeltaMovement d;
+		public float boardScore;
+		public Board b;
+		public piecePosBundle(Piece p, DeltaMovement d, Board b, float score){
+			this.p = p;
+			this.d = d;
+			this.b = b;
+			this.boardScore = score;
+		}
+	}
 
 	public static void printBoard(Board board) {
 		System.out.println();
@@ -35,7 +47,7 @@ public class Game {
 				if (board.board[j][8-i] != null)
 					System.out.print(board.board[j][8-i].tag);
 				else
-					System.out.print('#');
+					System.out.print(' ');
 				System.out.print(" ");
 			}
 			System.out.println("|");
@@ -57,7 +69,7 @@ public class Game {
 				String s = reader.readLine();
 				notation(s, b);
 				//TODO: illegal move shouldnt refresh AI
-				isPlayerTurn = false;
+				if(notation(s, b)) isPlayerTurn = false;
 			} else {
 				System.out.println("a");
 				DeltaMovement bestMove = null;
@@ -80,7 +92,7 @@ public class Game {
 							tempPiece.forceMove(d.dx, d.dy);
 					
 							//change board for evaluation
-							if(temp.evalBoard()>max){
+							if(temp.evalBoard()>=max){
 								//save board info
 								bestMove = d;
 								bestx = tempx;
@@ -91,13 +103,30 @@ public class Game {
 						}
 					}
 				}
-				System.out.println(b.evalBoard());
+				
 				b.getPiece(bestx,besty).forceMove(bestMove.dx, bestMove.dy);
+				System.out.println(b.evalBoard());
 				isPlayerTurn = true;
 			}
 		}
 	}
 
+	public piecePosBundle minimax(int depth, boolean isAIturn, piecePosBundle bundle){
+		if(depth == 0){
+			return new piecePosBundle(bundle.p,bundle.d,bundle.b,bundle.b.evalBoard());
+		}
+		if(isAIturn){
+			float maxEval = -100000;
+			float eval = minimax(depth-1,false,new piecePosBundle(null, null, null, maxEval)).b.evalBoard();
+			maxEval = Math.max(maxEval,eval);
+		}
+		else{
+			float minEval = 1000000;
+			float eval = minimax(depth-1,true,new piecePosBundle(null, null, null, minEval)).b.evalBoard();
+			minEval = Math.min(minEval, eval);
+		}
+		return bundle;
+	}
 
 	public static boolean notation(String notation, Board b) {
 
@@ -193,16 +222,20 @@ public class Game {
 					}
 				}
 			} else {
-				if (unNull(b.board[coordinate.get(0)][coordinate.get(1)])) {
-					b.board[coordinate.get(0)][coordinate.get(1)].makeMovePlayer(x, y);
+				if(coordinate.size()>0){
+					if (unNull(b.board[coordinate.get(0)][coordinate.get(1)])) {
+						b.board[coordinate.get(0)][coordinate.get(1)].makeMovePlayer(x, y);
+					}
+					
 				}
-				
+				else return false;
 			}
+			return false;
 		} else {
 			return false;
 		}
 
-		return true;
+		return false;
 	}
 
 	public static boolean isLower(char c) {
