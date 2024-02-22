@@ -49,13 +49,13 @@ public class Game {
 				new InputStreamReader(System.in));
 		Board b = new Board();
 		b.makeDefault();
-		printBoard(b);
+		printGood(b);
 		while (true) {
 			b.evalBoard();
 			if (isPlayerTurn) {
 				String s = reader.readLine();
 				notation(s, b);
-				printBoard(b);
+				printGood(b);
 			} else {
 				for (int i = 0; i < b.onBoard.size(); i++) {
 					Piece p = b.onBoard.get(i);
