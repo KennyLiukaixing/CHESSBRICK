@@ -48,9 +48,11 @@ public class Game {
 				new InputStreamReader(System.in));
 		Board board = new Board();
 		board.makeDefault();
+		
 
 		while (true) {
 			 //board.evalBoard();
+			printGood(board);
 			if (board.gameEnd(isPlayerTurn) != 2) {
 				if (board.gameEnd(isPlayerTurn) == 0) {
 					System.out.println("DRAW");
@@ -64,12 +66,37 @@ public class Game {
 				}
 			}
 			if (isPlayerTurn) {
-				printGood(board);
-				String s = reader.readLine();
+				
+				String s = reader.readLine();/* 
 				
 				if (notation(s, board)) isPlayerTurn = false;
-				//b.playBestMove(true);
-				//isPlayerTurn = false;
+				isPlayerTurn = false;*/
+				ArrayList<Board> Boards = new ArrayList<>();
+				float maxEval = -10000;
+				Board maxBoard = new Board();
+				for(Piece p:board.onBoard){
+					if(Piece.isWhite(p.tag)){
+						for(DeltaMovement d:p.legalNoCheck()){
+							Board temp = new Board(board);
+							Boards.add(temp.boardWithMove(p, d));
+						}
+					}
+					
+				}
+				for(int i = 0;i<Boards.size();i++){
+					float score = Boards.get(i).miniMax(Boards.get(i), 2, true).score;
+					Boards.get(i).score = score;
+				}
+				for(int i = 0;i<Boards.size();i++){
+					if(Boards.get(i).score>maxEval){
+						maxEval = Boards.get(i).score;
+						maxBoard = Boards.get(i);
+					}
+				}
+				board = maxBoard;
+				// System.out.println(bestx + " " + besty + " " + b.evalBoard(false));
+				isPlayerTurn = false;
+				
 			} else {
 				//At this point DeltaMovement is just an eldritch abomination I dont even want to think about it
 				ArrayList<Board> Boards = new ArrayList<>();
@@ -85,7 +112,7 @@ public class Game {
 					
 				}
 				for(int i = 0;i<Boards.size();i++){
-					float score = Boards.get(i).miniMax(Boards.get(i), 1, false).score;
+					float score = Boards.get(i).miniMax(Boards.get(i), 2, false).score;
 					Boards.get(i).score = score;
 				}
 				for(int i = 0;i<Boards.size();i++){

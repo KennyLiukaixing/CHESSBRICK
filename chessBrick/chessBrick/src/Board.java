@@ -205,8 +205,11 @@ public class Board {
 	}
 	//DeltaMovement can store piece, xy target, score
 	public DeltaMovement miniMax(Board b, int depth, boolean isWhiteTurn){
-		if(depth == 0) return getBestMove(isWhiteTurn);
+		if(depth == 0){
+			return getBestMove(isWhiteTurn);
+		}
 		else{
+			Game.printGood(b);
 			if(isWhiteTurn){
 				float minEval = 10000;
 				ArrayList<DeltaMovement> moves = new ArrayList<>();
