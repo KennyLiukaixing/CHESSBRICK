@@ -38,21 +38,56 @@ public class Board {
 			}
 		}
 	}
+	public void playBestMove(){
+		DeltaMovement bestMove = null;
+		double max = -10000;
+		int bestx = 0;
+		int besty = 0;
+		for (int i = 0; i < onBoard.size(); i++) {
+ 			Piece p = onBoard.get(i);
+			if (!Piece.isWhite(p.tag)) {
+				for (DeltaMovement dm : p.legalNoCheck()) {
+					Board temp = new Board(this);// Deep copy board
+					Piece tPiece = temp.getPiece(p.xPos, p.yPos);// get temp piece from board
+					// save coordinates for the piece
+					int tempx, tempy;
+					tempx = p.xPos;
+					tempy = p.yPos;
+					tPiece.forceMove(dm.dx, dm.dy);
+					// change board for evaluation
+					if (temp.evalPosition(false) >= max) {
+						// save board info
+						bestMove = dm;
+						bestx = tempx;
+						besty = tempy;
+						max = temp.evalPosition(false);
+						// printBoard(temp);
+						// System.out.println(bestx+" "+besty+" "+temp.evalBoard());
+					}
+				}
+			}
+		}
+		this.getPiece(bestx, besty).forceMove(bestMove.dx, bestMove.dy);
+	}
+	
 
-	public float evalBoard() {
+	public float evalPosition(boolean isWhiteTurn) {
 		float matStat = 0;
 		for (int j = 0; j < onBoard.size(); j++) {
 			Piece p = onBoard.get(j);
-			double fileWeights[] = { 0, 1, 1.1, 1.3, 1.5, 1.3, 1.1, 1 };
-			char c = p.tag;
-			if (p.isWhite(p.tag)) {
+			double fileWeights[] = { 1, 1, 1.1, 1.3, 1.5, 1.3, 1.1, 1 };
+
+			if (Piece.isWhite(p.tag)) {
 				matStat -= p.mat * fileWeights[p.xPos];
 				for (int i = 0; i < p.legalMoves().size(); i++) {
 					DeltaMovement d = p.legalMoves().get(i);
 					if (d.ext) {
-						matStat -= 0.3 * board[d.dx][d.dy].mat;
+						if (isWhiteTurn)
+							matStat -= 0.3 * board[d.dx][d.dy].mat;
+						else
+							matStat -= 0.05 * board[d.dx][d.dy].mat;
 					} else {
-						matStat -= 0.3 * p.mat;
+						matStat -= 0.1 * p.mat;
 					}
 				}
 			} else {
@@ -60,39 +95,46 @@ public class Board {
 				for (int i = 0; i < p.legalMoves().size(); i++) {
 					DeltaMovement d = p.legalMoves().get(i);
 					if (d.ext) {
-						matStat += 0.3 * board[d.dx][d.dy].mat;
+						if (!isWhiteTurn)
+							matStat += 0.3 * board[d.dx][d.dy].mat;
+						else
+							matStat += 0.05 * board[d.dx][d.dy].mat;
 					} else {
-						System.out.println(p + " " + d.dx + " " + d.dy);
-						matStat += 0.3 * p.mat;
+						// System.out.println(p + " " + d.dx + " " + d.dy);
+						matStat += 0.1 * p.mat;
 					}
 				}
 			}
 		}
-		System.out.println(matStat);
+		// System.out.println(matStat);
 		return matStat;
 	}
 
-	public int checkmate(boolean isPlayerMove) {
+	public int gameEnd(boolean isPlayerMove) {
 		if (isPlayerMove) {
 			for (Piece p : onBoard) {
 				if (Piece.isWhite(p.tag) && p.legalNoCheck().size() > 0) {
-					return 0;
+					return 2;
 				}
 			}
 			DeltaMovement kingPos = getKingPos('W');
-			if (isKingUnderAttack('W', kingPos.dx, kingPos.dy, board)) {
+			if (Piece.isKingUnderAttack('W', kingPos.dx, kingPos.dy, this)) {
 				return 1;
+			} else {
+				return 0;
 			}
-				
+
 		} else {
 			for (Piece p : onBoard) {
 				if (!Piece.isWhite(p.tag) && p.legalNoCheck().size() > 0) {
-					return 0;
+					return 2;
 				}
 			}
 			DeltaMovement kingPos = getKingPos('B');
-			if (isKingUnderAttack('B', kingPos.dx, kingPos.dy, board)) {
+			if (Piece.isKingUnderAttack('B', kingPos.dx, kingPos.dy, this)) {
 				return -1;
+			} else {
+				return 0;
 			}
 		}
 	}

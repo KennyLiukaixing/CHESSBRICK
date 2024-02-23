@@ -20,12 +20,14 @@ public abstract class Piece {
 		if (tag == 'p' || tag == 'k' || tag == 'n' || tag == 'q' || tag == 'b' || tag == 'r')
 			isPlayerSide = true;
 	}
-	public void forceMove(int Tgtx, int Tgty){
-		board.replace(Tgtx,Tgty,this,this.xPos,this.yPos);
+
+	public void forceMove(int Tgtx, int Tgty) {
+		board.replace(Tgtx, Tgty, this, this.xPos, this.yPos);
 		this.xPos = Tgtx;
 		this.yPos = Tgty;
 		moved = true;
 	}
+
 	public boolean makeMovePlayer(int Tgtx, int Tgty) {
 		legalNoCheck = legalNoCheck();
 		boolean success = false;
@@ -37,12 +39,11 @@ public abstract class Piece {
 					xPos = d.dx;
 					yPos = d.dy;
 					moved = true;
-					if(d.castle == true) {
-						if(d.dx == 2) {
-							board.board[0][7].forceMove(3,7);
-						}
-						else {
-							board.board[7][7].forceMove(5,7);
+					if (d.castle == true) {
+						if (d.dx == 2) {
+							board.board[0][7].forceMove(3, 7);
+						} else {
+							board.board[7][7].forceMove(5, 7);
 						}
 					}
 				}
@@ -51,8 +52,8 @@ public abstract class Piece {
 		return success;
 	}
 
-	public void makeMoveAI(int Tgtx, int Tgty){
-	//TODO: Handle AI side castling
+	public void makeMoveAI(int Tgtx, int Tgty) {
+		// Handle AI side castling
 	}
 
 	// is this move legal if nothing else is on the board
@@ -60,61 +61,60 @@ public abstract class Piece {
 	// uses ext to denote removal ////IMPORTANT////
 	public ArrayList<DeltaMovement> legalMoves() {
 		ArrayList<DeltaMovement> legals = new ArrayList<>();
-		
+
 		if (this.tag == 'k' || this.tag == 'n'
 				|| this.tag == 'K' || this.tag == 'N') {
 			for (DeltaMovement d : moves) {
 				if (xPos + d.dx < 0 || xPos + d.dx > 7 || yPos + d.dy < 0 || yPos + d.dy > 7) {
 					// do nothing
-				} else {					
+				} else {
 					if (board.isEmpty(xPos + d.dx, yPos + d.dy))
 						legals.add(
-							new DeltaMovement(xPos + d.dx, yPos + d.dy)
-						);
+								new DeltaMovement(xPos + d.dx, yPos + d.dy));
 					else {
 						if (!board.sameSide(this,
 								board.getPiece(xPos + d.dx, yPos + d.dy))) {
-							board.remove(board.getPiece(xPos + d.dx, yPos + d.dy));
+							// board.remove(board.getPiece(xPos + d.dx, yPos + d.dy));
 							legals.add(new DeltaMovement(xPos + d.dx, yPos + d.dy, true, false));
 						}
 					}
 				}
 			}
-			if(this.tag == 'k' && !this.moved){
-				if(board.board[0][7]!=null){
-					if(board.board[0][7].tag == 'r' && !board.board[0][7].moved){
-						if(board.board[1][7] == null&&
-						   board.board[2][7] == null&&
-						   board.board[3][7] == null){
-							legals.add(new DeltaMovement(2,7,false,true));
+			if (this.tag == 'k' && !this.moved) {
+				if (board.board[0][7] != null) {
+					if (board.board[0][7].tag == 'r' && !board.board[0][7].moved) {
+						if (board.board[1][7] == null &&
+								board.board[2][7] == null &&
+								board.board[3][7] == null) {
+							legals.add(new DeltaMovement(2, 7, false, true));
 						}
 					}
 				}
-				if(board.board[7][7]!=null){
-					if(board.board[7][7].tag == 'r' && !board.board[7][7].moved){
-						if(board.board[5][7] == null&&
-						   board.board[6][7] == null){
-							legals.add(new DeltaMovement(6,7,false,true));
+				if (board.board[7][7] != null) {
+					if (board.board[7][7].tag == 'r' && !board.board[7][7].moved) {
+						if (board.board[5][7] == null &&
+								board.board[6][7] == null) {
+							legals.add(new DeltaMovement(6, 7, false, true));
 						}
 					}
 				}
 			}
-			
-			if(this.tag == 'K' && !this.moved){
-				if(board.board[0][0]!=null){
-					if(board.board[0][0].tag == 'R' && !board.board[0][0].moved){
-						if(board.board[1][0] == null&&
-						   board.board[2][0] == null&&
-						   board.board[3][0] == null){
-							legals.add(new DeltaMovement(2,0,false,true));
+
+			if (this.tag == 'K' && !this.moved) {
+				if (board.board[0][0] != null) {
+					if (board.board[0][0].tag == 'R' && !board.board[0][0].moved) {
+						if (board.board[1][0] == null &&
+								board.board[2][0] == null &&
+								board.board[3][0] == null) {
+							legals.add(new DeltaMovement(2, 0, false, true));
 						}
 					}
 				}
-				if(board.board[7][0]!=null){
-					if(board.board[7][0].tag == 'R' && !board.board[7][0].moved){
-						if(board.board[5][0] == null&&
-						   board.board[6][0] == null){
-							legals.add(new DeltaMovement(6,0,false,true));
+				if (board.board[7][0] != null) {
+					if (board.board[7][0].tag == 'R' && !board.board[7][0].moved) {
+						if (board.board[5][0] == null &&
+								board.board[6][0] == null) {
+							legals.add(new DeltaMovement(6, 0, false, true));
 						}
 					}
 				}
@@ -125,27 +125,28 @@ public abstract class Piece {
 				if (xPos + d.dx < 0 || xPos + d.dx > 7 || yPos + d.dy < 0 || yPos + d.dy > 7) {
 					// do nothing
 				} else if (yPos + d.dy == 7 || yPos + d.dy == 0) {
-					//promote();
+					// promote();
 				} else {
 					if (board.isEmpty(xPos + d.dx, yPos + d.dy))
 						legals.add(
 								new DeltaMovement(xPos + d.dx, yPos + d.dy));
 					if (moved == false) {
-						if(board.isEmpty(xPos + d.dx*2, yPos + d.dy*2)){
+						if (board.isEmpty(xPos + d.dx * 2, yPos + d.dy * 2)) {
 							legals.add(
-								new DeltaMovement(xPos + d.dx * 2, yPos + d.dy * 2));
+									new DeltaMovement(xPos + d.dx * 2, yPos + d.dy * 2));
 						}
 					}
 				}
 			}
 			for (DeltaMovement d : captureMoves) {
 				if (!(xPos + d.dx < 0 || xPos + d.dx > 7 || yPos + d.dy < 0 || yPos + d.dy > 7)) {
-					if (!board.isEmpty(xPos + d.dx, yPos + d.dy)&&
-							(!board.sameSide(this, board.board[xPos+d.dx][yPos+d.dy]))) {
+					if (!board.isEmpty(xPos + d.dx, yPos + d.dy) &&
+							(!board.sameSide(this, board.board[xPos + d.dx][yPos + d.dy]))) {
 						legals.add(
 								new DeltaMovement(xPos + d.dx, yPos + d.dy));
-						if (yPos + d.dy == 7 || yPos + d.dy == 0) {}
-							//promote();
+						if (yPos + d.dy == 7 || yPos + d.dy == 0) {
+						}
+						// promote();
 					}
 				}
 			}
@@ -173,26 +174,26 @@ public abstract class Piece {
 			return legals;
 		}
 	}
-	
+
 	public ArrayList<DeltaMovement> legalNoCheck() {
-		
+
 		ArrayList<DeltaMovement> legals = new ArrayList<>();
 		ArrayList<DeltaMovement> possibles = legalMoves();
-		
+
 		for (DeltaMovement move : possibles) {
 			// Create a temporary board to simulate the move
 			Board temp = new Board(board); // Assuming you have a constructor to create a deep copy of the board
-			
+
 			// Apply the move to the temporary board
 			temp.board[xPos][yPos].forceMove(move.dx, move.dy);
-		
+
 			if (isWhite(this.tag)) {
 
 				DeltaMovement kingPos = temp.getKingPos('W');
 				if (!isKingUnderAttack('W', kingPos.dx, kingPos.dy, temp)) {
 					legals.add(move);
-				}
-				else{} //System.out.println(kingPos.dx+" "+kingPos.dy);
+				} else {
+				} // System.out.println(kingPos.dx+" "+kingPos.dy);
 
 			} else {
 
@@ -201,27 +202,27 @@ public abstract class Piece {
 					legals.add(move);
 				}
 			}
-			
+
 		}
 		return legals;
 	}
-	
+
 	public static boolean isKingUnderAttack(char WorB, int x, int y, Board b) {
 		// Loop through all pieces on the board
 		for (int i = 0; i < b.onBoard.size(); i++) {
 			Piece piece = b.onBoard.get(i);
-	
+
 			// Check if the piece belongs to the opposing side
 			if ((WorB == 'W' && !Piece.isWhite(piece.tag)) || (WorB == 'B' && Piece.isWhite(piece.tag))) {
 				// Check if the piece can attack the king position
 				for (DeltaMovement move : piece.legalMoves()) {
 					int newX = move.dx;
 					int newY = move.dy;
-					
-					//sussssss
+
+					// sussssss
 					// If the piece can reach the king position, return true
 					if (newX == x && newY == y) {
-						//System.out.println(newX + " " + newY + " " + piece.tag);
+						// System.out.println(newX + " " + newY + " " + piece.tag);
 						return true;
 					}
 				}
@@ -230,8 +231,7 @@ public abstract class Piece {
 		// If no enemy piece can attack the king position, return false
 		return false;
 	}
-	
-	
+
 	public void promote() {
 		if (this.tag == 'p')
 			this.tag = 'q';

@@ -63,46 +63,27 @@ public class Game {
 		Board b = new Board();
 		b.makeDefault();
 		while (true) {
-			//b.evalBoard();
+			// b.evalBoard();
+			if (b.gameEnd(isPlayerTurn) != 2) {
+				if (b.gameEnd(isPlayerTurn) == 0) {
+					System.out.println("DRAW");
+					break;
+				} else if (b.gameEnd(isPlayerTurn) == 1) {
+					System.out.println("BLACK WINS");
+					break;
+				} else {
+					System.out.println("WHITE WINS");
+					break;
+				}
+			}
 			if (isPlayerTurn) {
 				printGood(b);
 				String s = reader.readLine();
-				if (notation(s, b)) isPlayerTurn = false;
+				if (notation(s, b))
+					isPlayerTurn = false;
 			} else {
-				DeltaMovement bestMove = null;
-				double max = -10000;
-				int bestx = 0;
-				int besty = 0;
-
-				for (int i = 0; i < b.onBoard.size(); i++) {
-					Piece p = b.onBoard.get(i);
-					if (!Piece.isWhite(p.tag)) {
-						for (DeltaMovement dm : p.legalNoCheck()) {
-							Board temp = new Board(b);// Deep copy board
-							Piece tPiece = temp.getPiece(p.xPos, p.yPos);// get temp piece from board
-							// save coordinates for the piece
-							int tempx, tempy;
-							tempx = p.xPos;
-							tempy = p.yPos;
-							tPiece.forceMove(dm.dx, dm.dy);
-
-							// change board for evaluation
-							if (temp.evalBoard() >= max) {
-								// save board info
-								bestMove = dm;
-								bestx = tempx;
-								besty = tempy;
-								max = temp.evalBoard();
-								//printBoard(temp);
-								// System.out.println(bestx+" "+besty+" "+temp.evalBoard());
-							}
-						}
-					}
-				}
-				
-				b.getPiece(bestx, besty).forceMove(bestMove.dx, bestMove.dy);
-				System.out.println(bestx+" "+besty+" "+b.evalBoard());
-				printBoard(b);
+				b.playBestMove();
+				// System.out.println(bestx + " " + besty + " " + b.evalBoard(false));
 				isPlayerTurn = true;
 			}
 		}
@@ -138,8 +119,7 @@ public class Game {
 		}
 
 		notation = notation.replaceAll(" ", "");
-		Map<Character, Integer>
-		filesToNum = new HashMap<>();
+		Map<Character, Integer> filesToNum = new HashMap<>();
 
 		filesToNum.put('a', 0);
 		filesToNum.put('b', 1);
@@ -229,8 +209,9 @@ public class Game {
 				}
 			} else {
 				if (coordinate.size() > 0) {
-					if (unNull(b.board[coordinate.get(0)][coordinate.get(1)])) {
-						b.board[coordinate.get(0)][coordinate.get(1)].makeMovePlayer(x, y);
+					if (unNull(b.board[coordinate.get(0)][coordinate.get(1)])
+							&& b.board[coordinate.get(0)][coordinate.get(1)].makeMovePlayer(x, y)) {
+
 						return true;
 					}
 
