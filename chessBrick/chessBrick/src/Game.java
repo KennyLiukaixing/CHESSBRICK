@@ -7,21 +7,7 @@ public class Game {
 
 	public static boolean isPlayerTurn = true;
 
-	class piecePosBundle {
-		public Piece p;
-		public DeltaMovement d;
-		public float boardScore;
-		public Board b;
-
-		public piecePosBundle(Piece p, DeltaMovement d, Board b, float score) {
-			this.p = p;
-			this.d = d;
-			this.b = b;
-			this.boardScore = score;
-		}
-	}
-
-	public static void printBoard(Board board) {
+	public static void printTestBoard(Board board) {
 		System.out.println();
 		System.out.println("  0 1 2 3 4 5 6 7");
 		for (int i = 0; i < 8; i++) {
@@ -79,38 +65,40 @@ public class Game {
 			if (isPlayerTurn) {
 				printGood(b);
 				String s = reader.readLine();
-				if (notation(s, b))
-					isPlayerTurn = false;
+				
+				if (notation(s, b)) isPlayerTurn = false;
+				//b.playBestMove(true);
+				//isPlayerTurn = false;
 			} else {
-				b.playBestMove();
+				//At this point DeltaMovement is just an eldritch abomination I dont even want to think about it
+				ArrayList<Board> Boards = new ArrayList<>();
+				float maxEval = -10000;
+				Board maxBoard = null;
+				for(Piece p:b.onBoard){
+					if(!Piece.isWhite(p.tag)){
+						for(DeltaMovement d:p.legalNoCheck()){
+							Board temp = new Board(b);
+							Boards.add(temp.boardWithMove(p, d));
+						}
+					}
+					
+				}
+				for(int i = 0;i<Boards.size();i++){
+					float score = Boards.get(i).miniMax(Boards.get(i), 1, false).score;
+					Boards.get(i).score = score;
+				}
+				for(int i = 0;i<Boards.size();i++){
+					if(Boards.get(i).score>maxEval){
+						maxEval = Boards.get(i).score;
+						maxBoard = Boards.get(i);
+					}
+				}
+				b = maxBoard;
 				// System.out.println(bestx + " " + besty + " " + b.evalBoard(false));
 				isPlayerTurn = true;
 			}
 		}
 	}
-
-	/*
-	 * public piecePosBundle minimax(int depth, boolean isAIturn, piecePosBundle
-	 * newBundle, piecePosBundle oldMove){
-	 * if(depth == 0){
-	 * return new
-	 * piecePosBundle(newBundle.p,newBundle.d,newBundle.b,newBundle.b.evalBoard());
-	 * }
-	 * if(isAIturn){
-	 * float maxEval = -100000;
-	 * float eval = minimax(depth-1,false,new piecePosBundle(null, null, null,
-	 * maxEval)).b.evalBoard();
-	 * maxEval = Math.max(maxEval,eval);
-	 * }
-	 * else{
-	 * float minEval = 100000;
-	 * float eval = minimax(depth-1,true,new piecePosBundle(null, null, null,
-	 * minEval)).b.evalBoard();
-	 * minEval = Math.min(minEval, eval);
-	 * }
-	 * return bundle;
-	 * }
-	 */
 
 	public static boolean notation(String notation, Board b) {
 
