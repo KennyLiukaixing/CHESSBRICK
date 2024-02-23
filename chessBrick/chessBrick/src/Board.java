@@ -239,7 +239,7 @@ public class Board {
 				for(DeltaMovement m:moves){
 					Board newBoard = this.boardWithMove(m.p, m);
 					float eval = miniMax(newBoard, depth-1,true).score;
-					if(eval<maxEval){
+					if(eval>maxEval){
 						maxEval = eval;
 					}
 				}//I cannot express with words how nasty this is
