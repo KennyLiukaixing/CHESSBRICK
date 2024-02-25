@@ -109,6 +109,11 @@ public class Board {
 
 	public float eval() {
 		float eval = 0;
+		if (gameEnd(true) == 1) {
+			eval = -80;
+		} else if (gameEnd(false) == -1) {
+			eval = 80;
+		}
 		for (int i = 0; i < onBoard.size(); i++) {
 			Piece p = onBoard.get(i);
 			int sign;
@@ -188,6 +193,7 @@ public class Board {
 		}
 	
 		// Return the array of indexes
+		System.out.println(moves.get(index).get(indexes[index]));
 		return new int[]{index, indexes[index]};
 	}
 	
