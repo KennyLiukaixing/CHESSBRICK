@@ -51,7 +51,7 @@ public class Game {
 
 		while (true) {
 			// board.evalBoard();
-			printGood(board);
+			printTestBoard(board);
 			if (board.gameEnd(isPlayerTurn) != 2) {
 				if (board.gameEnd(isPlayerTurn) == 0) {
 					System.out.println("DRAW");
@@ -72,7 +72,7 @@ public class Game {
 			} else {
 				// At this point DeltaMovement is just an eldritch abomination I dont even want
 				// to think about it
-				ArrayList<Board> Boards = new ArrayList<>();
+				/*ArrayList<Board> Boards = new ArrayList<>();
 				float maxEval = -10000;
 				Board maxBoard = new Board();
 				for (Piece p : board.onBoard) {
@@ -85,7 +85,7 @@ public class Game {
 
 				}
 				for (int i = 0; i < Boards.size(); i++) {
-					float score = Boards.get(i).miniMax(Boards.get(i), 2, false).score;
+					float score = Boards.get(i).miniMax2().score;
 					Boards.get(i).score = score;
 				}
 				for (int i = 0; i < Boards.size(); i++) {
@@ -94,7 +94,10 @@ public class Game {
 						maxBoard = Boards.get(i);
 					}
 				}
-				board = maxBoard;
+				board = maxBoard;*/
+				DeltaMovement move = board.miniMax2();
+				System.out.println(move.dx + " " + move.dy + " " + move.p.tag + " " + move.p.xPos + " " + move.p.yPos);
+				board.board[move.p.xPos][move.p.yPos].makeMovePlayer(move.dx, move.dy);
 				// System.out.println(bestx + " " + besty + " " + b.evalBoard(false));
 				isPlayerTurn = true;
 			}

@@ -135,56 +135,62 @@ public class Board {
 
 	public DeltaMovement miniMax2() {
 		ArrayList<ArrayList<DeltaMovement>> moves = allMoves(false);
-
-		ArrayList<ArrayList<Float>> evals = new ArrayList<>();
+		ArrayList<ArrayList<Float>> evals = new ArrayList<>(); // Initialize the evals ArrayList
+	
+		// Populate the evals ArrayList
 		for (int i = 0; i < moves.size(); i++) {
+			evals.add(new ArrayList<Float>()); // Initialize inner ArrayList<Float>
 			for (int j = 0; j < moves.get(i).size(); j++) {
-				evals.get(i).add(recurse(boardWithMove(black().get(i), moves.get(i).get(j)), 2,false));
+				// Populate the inner ArrayList<Float> with float values
+				evals.get(i).add(recurse(boardWithMove(black().get(i), moves.get(i).get(j)), 2, false));
 			}
 		}
-		int[] minimum = minimum(evals);
-		return moves.get(minimum[0]).get(minimum[1]);
-		
-		
+	
+		int[] minimum = minimum(evals); // Here's where the error likely occurs
+		DeltaMovement move = moves.get(minimum[0]).get(minimum[1]);
+		move.p = black().get(minimum[0]);
+		return move;
 	}
+	
 
 	public int[] minimum(ArrayList<ArrayList<Float>> moves) {
-        float[] mins = new float[moves.size()];
-        int[] indexes = new int[moves.size()];
-
-        for (int i = 0; i < moves.size(); i++) {
-            float localMin = Integer.MAX_VALUE; // Initialize to a large value
-            int index = -1;
-
-            for (int j = 0; j < moves.get(i).size(); j++) {
-                if (moves.get(i).get(j) < localMin) {
-                    localMin = moves.get(i).get(j);
-                    index = j;
-                }
-            }
-
-            if (index != -1) {
-                mins[i] = localMin;
-                indexes[i] = index;
-            } else {
-                mins[i] = Integer.MAX_VALUE;
-                indexes[i] = -1;
-            }
-        }
-
-        float largeMin = Integer.MAX_VALUE; // Initialize to a large value
-        int index = -1;
-
-        for (int i = 0; i < mins.length; i++) {
-            if (mins[i] < largeMin) {
-                largeMin = mins[i];
-                index = i;
-            }
-        }
-
-        // Return the array of indexes
-        return new int[]{index, indexes[index]};
-    }
+		float[] mins = new float[moves.size()];
+		int[] indexes = new int[moves.size()];
+	
+		for (int i = 0; i < moves.size(); i++) {
+			if (moves.get(i).isEmpty()) {
+				mins[i] = Float.MAX_VALUE; // Set to a large value
+				indexes[i] = -1;
+			} else {
+				float localMin = Float.MAX_VALUE; // Initialize to a large value
+				int index = -1;
+	
+				for (int j = 0; j < moves.get(i).size(); j++) {
+					if (moves.get(i).get(j) < localMin) {
+						localMin = moves.get(i).get(j);
+						index = j;
+					}
+				}
+	
+				mins[i] = localMin;
+				indexes[i] = index;
+			}
+		}
+	
+		float largeMin = Float.MAX_VALUE; // Initialize to a large value
+		int index = -1;
+	
+		for (int i = 0; i < mins.length; i++) {
+			if (mins[i] < largeMin && indexes[i] != -1) {
+				largeMin = mins[i];
+				index = i;
+			}
+		}
+	
+		// Return the array of indexes
+		return new int[]{index, indexes[index]};
+	}
+	
 
 	public float recurse(Board b, int depth, boolean isWhiteTurn) {
 		if (depth == 0) {
@@ -198,9 +204,9 @@ public class Board {
 				for (DeltaMovement move : pieceMoves) {
 					Board newBoard;
 					if (isWhiteTurn) {
-						newBoard = b.boardWithMove(white().get(i), move);
+						newBoard = b.boardWithMove(b.white().get(i), move);
 					} else {
-						newBoard = b.boardWithMove(black().get(i), move);
+						newBoard = b.boardWithMove(b.black().get(i), move);
 					}
 					
 					float eval = recurse(newBoard, depth - 1, !isWhiteTurn);
@@ -213,7 +219,7 @@ public class Board {
 				float minEval = Collections.min(evals);
 				return minEval;
 			} else {
-				float maxEval = Collections.max(evals);
+				float maxEval = Collections.min(evals);
 				return maxEval;
 			}
 		}
@@ -381,7 +387,7 @@ public class Board {
 					if (eval > maxEval) {
 						maxEval = eval;
 					}
-				} // I cannot express with words how nasty this is
+				}
 				return new DeltaMovement(0, 0, null, maxEval);
 			}
 		}
@@ -389,7 +395,7 @@ public class Board {
 
 	// WHITE: r
 	// BLACK: R
-	// Something broke here but ima leave it as is because I dont want to fix it
+
 	public void makeDefault() {
 		board[0][7] = new Rook(0, 7, 'r', this);
 		board[7][7] = new Rook(7, 7, 'r', this);

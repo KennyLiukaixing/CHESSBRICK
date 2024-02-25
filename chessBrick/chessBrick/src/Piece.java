@@ -35,10 +35,12 @@ public abstract class Piece {
 			for (DeltaMovement d : this.legalNoCheck()) {
 				if (d.dx == Tgtx && d.dy == Tgty) {
 					success = true;
+					
 					board.replace(Tgtx, Tgty, this, this.xPos, this.yPos);
 					xPos = d.dx;
 					yPos = d.dy;
 					moved = true;
+
 					if (d.castle == true) {
 						if (d.dx == 2) {
 							board.board[0][7].forceMove(3, 7);
