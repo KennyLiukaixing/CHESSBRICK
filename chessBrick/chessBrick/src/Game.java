@@ -51,7 +51,8 @@ public class Game {
 
 		while (true) {
 			// board.evalBoard();
-			printTestBoard(board);
+			printGood(board);
+			System.out.println(board.eval());
 			if (board.gameEnd(isPlayerTurn) != 2) {
 				if (board.gameEnd(isPlayerTurn) == 0) {
 					System.out.println("DRAW");
@@ -96,8 +97,7 @@ public class Game {
 				}
 				board = maxBoard;*/
 				DeltaMovement move = board.miniMax2();
-				System.out.println(move.dx + " " + move.dy + " " + move.p.tag + " " + move.p.xPos + " " + move.p.yPos);
-				board.board[move.p.xPos][move.p.yPos].makeMovePlayer(move.dx, move.dy);
+				board.board[move.p.xPos][move.p.yPos].forceMove(move.dx, move.dy);
 				// System.out.println(bestx + " " + besty + " " + b.evalBoard(false));
 				isPlayerTurn = true;
 			}

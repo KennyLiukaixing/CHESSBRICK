@@ -142,7 +142,7 @@ public class Board {
 			evals.add(new ArrayList<Float>()); // Initialize inner ArrayList<Float>
 			for (int j = 0; j < moves.get(i).size(); j++) {
 				// Populate the inner ArrayList<Float> with float values
-				evals.get(i).add(recurse(boardWithMove(black().get(i), moves.get(i).get(j)), 2, false));
+				evals.get(i).add(recurse(boardWithMove(black().get(i), moves.get(i).get(j)), 2, true));
 			}
 		}
 	
@@ -223,6 +223,7 @@ public class Board {
 				return maxEval;
 			}
 		}
+		
 	}
 
 	public ArrayList<ArrayList<DeltaMovement>> allMoves(boolean isWhite) {
