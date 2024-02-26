@@ -1,5 +1,6 @@
 import java.util.*;
 
+
 public class Board {
 
 	float score = 0;
@@ -221,13 +222,11 @@ public class Board {
 			}
 	
 			// Find the minimum or maximum evaluation based on whose turn it is
-			if (isWhiteTurn) {
-				float minEval = Collections.min(evals);
-				return minEval;
-			} else {
-				float maxEval = Collections.min(evals);
-				return maxEval;
+			float sum = 0;
+			for (float move : evals) {
+				sum += move;
 			}
+			return sum / evals.size();
 		}
 		
 	}
