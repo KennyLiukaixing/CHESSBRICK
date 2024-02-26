@@ -71,34 +71,8 @@ public class Game {
 				if (notation(s, board))
 					isPlayerTurn = false;
 			} else {
-				// At this point DeltaMovement is just an eldritch abomination I dont even want
-				// to think about it
-				/*ArrayList<Board> Boards = new ArrayList<>();
-				float maxEval = -10000;
-				Board maxBoard = new Board();
-				for (Piece p : board.onBoard) {
-					if (!Piece.isWhite(p.tag)) {
-						for (DeltaMovement d : p.legalNoCheck()) {
-							Board temp = new Board(board);
-							Boards.add(temp.boardWithMove(p, d));
-						}
-					}
-
-				}
-				for (int i = 0; i < Boards.size(); i++) {
-					float score = Boards.get(i).miniMax2().score;
-					Boards.get(i).score = score;
-				}
-				for (int i = 0; i < Boards.size(); i++) {
-					if (Boards.get(i).score > maxEval) {
-						maxEval = Boards.get(i).score;
-						maxBoard = Boards.get(i);
-					}
-				}
-				board = maxBoard;*/
 				DeltaMovement move = board.miniMax2();
 				board.board[move.p.xPos][move.p.yPos].forceMove(move.dx, move.dy);
-				// System.out.println(bestx + " " + besty + " " + b.evalBoard(false));
 				isPlayerTurn = true;
 			}
 		}
