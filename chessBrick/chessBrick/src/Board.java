@@ -215,21 +215,23 @@ public class Board {
 					} else {
 						newBoard = b.boardWithMove(b.black().get(i), move);
 					}
-					
+	
 					float eval = recurse(newBoard, depth - 1, !isWhiteTurn);
 					evals.add(eval);
 				}
 			}
 	
 			// Find the minimum or maximum evaluation based on whose turn it is
-			float sum = 0;
-			for (float move : evals) {
-				sum += move;
+			float result;
+			if (isWhiteTurn) {
+				result = Collections.max(evals);
+			} else {
+				result = Collections.min(evals);
 			}
-			return sum / evals.size();
+			return result;
 		}
-		
 	}
+	
 
 	public ArrayList<ArrayList<DeltaMovement>> allMoves(boolean isWhite) {
 		ArrayList<ArrayList<DeltaMovement>> moves = new ArrayList<>();
