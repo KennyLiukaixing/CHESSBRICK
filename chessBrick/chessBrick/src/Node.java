@@ -50,6 +50,7 @@ public class Node {
     }
 
     public Node addChild(DeltaMovement move) {
+        
         Board newBoard = board.boardWithMove(board.getPiece(move.dx, move.dy), move);
         Node childNode = new Node(newBoard, this, !isWhiteMove, move); // Pass move to the child node
         childArray.add(childNode);

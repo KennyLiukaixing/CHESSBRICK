@@ -43,71 +43,12 @@ public class Board {
 
 	public Board boardWithMove(Piece p, DeltaMovement d) {
 		Board bo = new Board(this);
-		// System.out.println(p.xPos+" "+p.yPos+"/"+d.dx+" "+d.dy);
-		// Game.printTestBoard(bo);
 		bo.getPiece(p.xPos, p.yPos).forceMove(d.dx, d.dy);
 
 		return bo;
 	}
 
-	/*public DeltaMovement getBestMove(boolean isWhiteTurn) {
-		DeltaMovement bestMove = null;
-		double max = -10000;
-		double min = 10000;
-		int bestx = 0;
-		int besty = 0;
-		for (int i = 0; i < onBoard.size(); i++) {
-			Piece p = onBoard.get(i);
-			if (!isWhiteTurn) {
-				if (!Piece.isWhite(p.tag)) {
-					for (DeltaMovement dm : p.legalNoCheck()) {
-						Board temp = new Board(this);// Deep copy board
-						Piece tPiece = temp.getPiece(p.xPos, p.yPos);// get temp piece from board
-						// save coordinates for the piece
-						int tempx, tempy;
-						tempx = p.xPos;
-						tempy = p.yPos;
-						tPiece.forceMove(dm.dx, dm.dy);
-						// change board for evaluation
-						if (temp.evalPosition(false) >= max) {
-							// save board info
-							bestMove = dm;
-							bestx = tempx;
-							besty = tempy;
-							max = temp.evalPosition(false);
-							// printBoard(temp);
-							// System.out.println(bestx+" "+besty+" "+temp.evalBoard());
-						}
-					}
-				}
-			} else {
-				if (Piece.isWhite(p.tag)) {
-					for (DeltaMovement dm : p.legalNoCheck()) {
-						Board temp = new Board(this);// Deep copy board
-						Piece tPiece = temp.getPiece(p.xPos, p.yPos);// get temp piece from board
-						// save coordinates for the piece
-						int tempx, tempy;
-						tempx = p.xPos;
-						tempy = p.yPos;
-						tPiece.forceMove(dm.dx, dm.dy);
-						// change board for evaluation
-						if (temp.evalPosition(false) <= min) {
-							// save board info
-							bestMove = dm;
-							bestx = tempx;
-							besty = tempy;
-							max = temp.evalPosition(false);
-							// printBoard(temp);
-							// System.out.println(bestx+" "+besty+" "+temp.evalBoard());
-						}
-					}
-				}
-			}
-		}
-		return new DeltaMovement(bestMove.dx, bestMove.dy, this.getPiece(bestx, besty), this.evalPosition(isWhiteTurn));
-		// this.getPiece(bestx, besty).forceMove(bestMove.dx, bestMove.dy);
-	}*/
-
+	
 	public float eval() {
 		float eval = 0;
 		if (gameEnd(true) == 1) {
@@ -204,7 +145,6 @@ public class Board {
 			return b.eval();
 		} else {
 			ArrayList<ArrayList<DeltaMovement>> moves = b.allMoves(isWhiteTurn);
-			ArrayList<Float> evals = new ArrayList<>();
 			if(isWhiteTurn){
 				float value = -Float.MAX_VALUE;
 				for (int i = 0; i < moves.size(); i++) {
@@ -220,7 +160,7 @@ public class Board {
 				}
 				return value;
 			}
-			else{
+			else {
 				float value = Float.MAX_VALUE;
 				for (int i = 0; i < moves.size(); i++) {
 					ArrayList<DeltaMovement> pieceMoves = moves.get(i);
@@ -281,56 +221,6 @@ public class Board {
 			}
 		}
 	}
-
-	// DeltaMovement can store piece, xy target, score
-	/*public DeltaMovement miniMax(Board b, int depth, boolean isWhiteTurn) {
-		if (depth == 0) {
-			return getBestMove(isWhiteTurn);
-		} else {
-			Game.printGood(b);
-			System.out.println(b.evalPosition(true));
-			if (isWhiteTurn) {
-				float minEval = 10000;
-				ArrayList<DeltaMovement> moves = new ArrayList<>();
-				for (Piece p : onBoard) {
-					if (Piece.isWhite(p.tag)) {
-						for (DeltaMovement d : p.legalNoCheck()) {
-							moves.add(new DeltaMovement(d.dx, d.dy, p, 0));
-						}
-					}
-				}
-				for (DeltaMovement m : moves) {
-					Board newBoard = this.boardWithMove(m.p, m);
-					float eval = newBoard.miniMax(newBoard, depth - 1, false).score;
-					if (eval < minEval) {
-						minEval = eval;
-					}
-				} // I cannot express with words how disgusting this is
-				return new DeltaMovement(0, 0, null, minEval);
-			} else {
-				float maxEval = -10000;
-				ArrayList<DeltaMovement> moves = new ArrayList<>();
-				for (Piece p : onBoard) {
-					if (!Piece.isWhite(p.tag)) {
-						for (DeltaMovement d : p.legalNoCheck()) {
-							moves.add(new DeltaMovement(d.dx, d.dy, p, 0));
-						}
-					}
-				}
-				for (DeltaMovement m : moves) {
-					Board newBoard = this.boardWithMove(m.p, m);
-					float eval = newBoard.miniMax(newBoard, depth - 1, true).score;
-					if (eval > maxEval) {
-						maxEval = eval;
-					}
-				}
-				return new DeltaMovement(0, 0, null, maxEval);
-			}
-		}
-	}*/
-
-	// WHITE: r
-	// BLACK: R
 
 	public void makeDefault() {
 		board[0][7] = new Rook(0, 7, 'r', this);

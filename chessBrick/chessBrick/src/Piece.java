@@ -206,6 +206,9 @@ public abstract class Piece {
 			}
 
 		}
+		for (int j = 0; j < legals.size(); j++) {
+			legals.get(j).p = this;
+		}
 		return legals;
 	}
 

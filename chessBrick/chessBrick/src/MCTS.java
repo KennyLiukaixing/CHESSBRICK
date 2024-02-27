@@ -2,9 +2,10 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class MCTS {
-    public static int TIMEOUT = 2000000000;
+    public static int TIMEOUT = 20000;
 
     public static DeltaMovement monteCarlo(Board b, boolean isWhite) {
+        System.out.println();
         long startTime = System.currentTimeMillis();
         Node root = new Node(b);
         while (System.currentTimeMillis() - startTime < TIMEOUT) {
@@ -13,7 +14,7 @@ public class MCTS {
                 System.out.println("No promising node found!");
                 break; // Exit the loop if no promising node is found
             }
-            if (promisingNode.board.gameEnd(promisingNode.isWhiteMove) == 0) {
+            if (promisingNode.board.gameEnd(promisingNode.isWhiteMove) == 2) {
                 expandNode(promisingNode);
             }
             Node nodeToExplore = promisingNode;
@@ -47,8 +48,12 @@ public class MCTS {
 
     private static void expandNode(Node node) {
         ArrayList<ArrayList<DeltaMovement>> possibleMoves = node.board.allMoves(node.isWhiteMove);
+
         for (ArrayList<DeltaMovement> moves : possibleMoves) {
+
             for (DeltaMovement move : moves) {
+
+                
                 Board tempBoard = node.board.boardWithMove(move.p, move);
                 Node newNode = new Node(tempBoard, node, !node.isWhiteMove, move); // Pass the move to the constructor
                 node.childArray.add(newNode);
@@ -58,16 +63,33 @@ public class MCTS {
     
 
     private static int simulateRandomPlayout(Node node) {
+
         Board tempBoard = new Board(node.board);
         boolean isWhiteMove = node.isWhiteMove;
         int gameResult = tempBoard.gameEnd(isWhiteMove);
         Random rand = new Random();
-        while (gameResult == 0) {
+
+        while (gameResult == 2) {
+
             ArrayList<ArrayList<DeltaMovement>> allMoves = tempBoard.allMoves(isWhiteMove);
+
             int randomIndex = rand.nextInt(allMoves.size());
-            ArrayList<DeltaMovement> randomPieceMoves = allMoves.get(randomIndex);
-            randomIndex = rand.nextInt(randomPieceMoves.size());
-            DeltaMovement randomMove = randomPieceMoves.get(randomIndex);
+            ArrayList<DeltaMovement> randomPieceMoves = allMoves.get(rand.nextInt(allMoves.size()));
+            
+            while (randomPieceMoves.size() == 0) {
+                randomIndex = rand.nextInt(allMoves.size());
+
+                randomPieceMoves = allMoves.get(randomIndex);
+            }
+            int randomIndex2 = rand.nextInt(randomPieceMoves.size());
+
+            DeltaMovement randomMove = randomPieceMoves.get(randomIndex2);
+            if (isWhiteMove) {
+                randomMove.p = tempBoard.white().get(randomIndex);
+            } else {
+                randomMove.p = tempBoard.black().get(randomIndex);
+            }
+
             tempBoard = tempBoard.boardWithMove(randomMove.p, randomMove);
             isWhiteMove = !isWhiteMove;
             gameResult = tempBoard.gameEnd(isWhiteMove);
