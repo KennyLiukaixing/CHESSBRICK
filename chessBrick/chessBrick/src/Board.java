@@ -199,7 +199,7 @@ public class Board {
 	}
 	
 
-	public float recurse(Board b, int depth, boolean isWhiteTurn) {
+	public float recurse(Board b, int depth, boolean isWhiteTurn/*, float alpha, float beta*/) {
 		if (depth == 0) {
 			return b.eval();
 		} else {
