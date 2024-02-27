@@ -148,11 +148,11 @@ public class Board {
 			evals.add(new ArrayList<Float>()); // Initialize inner ArrayList<Float>
 			for (int j = 0; j < moves.get(i).size(); j++) {
 				// Populate the inner ArrayList<Float> with float values
-				evals.get(i).add(recurse(boardWithMove(black().get(i), moves.get(i).get(j)), 2, true));
+				evals.get(i).add(recurse(boardWithMove(black().get(i), moves.get(i).get(j)), 2, true, -Float.MAX_VALUE, Float.MAX_VALUE));
 			}
 		}
 	
-		int[] minimum = minimum(evals); // Here's where the error likely occurs
+		int[] minimum = minimum(evals); 
 		DeltaMovement move = moves.get(minimum[0]).get(minimum[1]);
 		move.p = black().get(minimum[0]);
 		return move;
@@ -199,36 +199,42 @@ public class Board {
 	}
 	
 
-	public float recurse(Board b, int depth, boolean isWhiteTurn/*, float alpha, float beta*/) {
+	public float recurse(Board b, int depth, boolean isWhiteTurn, float alpha, float beta) {
 		if (depth == 0) {
 			return b.eval();
 		} else {
 			ArrayList<ArrayList<DeltaMovement>> moves = b.allMoves(isWhiteTurn);
 			ArrayList<Float> evals = new ArrayList<>();
-	
-			for (int i = 0; i < moves.size(); i++) {
-				ArrayList<DeltaMovement> pieceMoves = moves.get(i);
-				for (DeltaMovement move : pieceMoves) {
-					Board newBoard;
-					if (isWhiteTurn) {
-						newBoard = b.boardWithMove(b.white().get(i), move);
-					} else {
+			if(!isWhiteTurn){
+				float value = -Float.MAX_VALUE;
+				for (int i = 0; i < moves.size(); i++) {
+					ArrayList<DeltaMovement> pieceMoves = moves.get(i);
+					for (DeltaMovement move : pieceMoves) {
+						Board newBoard;
 						newBoard = b.boardWithMove(b.black().get(i), move);
+		
+						value = Math.max(recurse(newBoard, depth - 1, true, alpha, beta), value);
+						if(value>beta) break;
+						alpha = Math.max(alpha,value);
 					}
-	
-					float eval = recurse(newBoard, depth - 1, !isWhiteTurn);
-					evals.add(eval);
 				}
+				return value;
 			}
-	
-			// Find the minimum or maximum evaluation based on whose turn it is
-			float result;
-			if (isWhiteTurn) {
-				result = Collections.max(evals);
-			} else {
-				result = Collections.min(evals);
-			}
-			return result;
+			else{
+				float value = Float.MAX_VALUE;
+				for (int i = 0; i < moves.size(); i++) {
+					ArrayList<DeltaMovement> pieceMoves = moves.get(i);
+					for (DeltaMovement move : pieceMoves) {
+						Board newBoard;
+						newBoard = b.boardWithMove(b.white().get(i), move);
+		
+						value = Math.min(recurse(newBoard, depth - 1, false, alpha, beta), value);
+						if(value<alpha) break;
+						beta = Math.min(beta,value);
+					}
+				}
+				return value;
+			}			
 		}
 	}
 	
