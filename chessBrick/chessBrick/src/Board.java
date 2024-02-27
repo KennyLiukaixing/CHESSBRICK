@@ -205,17 +205,17 @@ public class Board {
 		} else {
 			ArrayList<ArrayList<DeltaMovement>> moves = b.allMoves(isWhiteTurn);
 			ArrayList<Float> evals = new ArrayList<>();
-			if(!isWhiteTurn){
+			if(isWhiteTurn){
 				float value = -Float.MAX_VALUE;
 				for (int i = 0; i < moves.size(); i++) {
 					ArrayList<DeltaMovement> pieceMoves = moves.get(i);
 					for (DeltaMovement move : pieceMoves) {
 						Board newBoard;
-						newBoard = b.boardWithMove(b.black().get(i), move);
+						newBoard = b.boardWithMove(b.white().get(i), move);
 		
-						value = Math.max(recurse(newBoard, depth - 1, true, alpha, beta), value);
-						if(value>beta) break;
+						value = Math.max(recurse(newBoard, depth - 1, false, alpha, beta), value);
 						alpha = Math.max(alpha,value);
+						if(value>=beta) break;
 					}
 				}
 				return value;
@@ -226,11 +226,11 @@ public class Board {
 					ArrayList<DeltaMovement> pieceMoves = moves.get(i);
 					for (DeltaMovement move : pieceMoves) {
 						Board newBoard;
-						newBoard = b.boardWithMove(b.white().get(i), move);
+						newBoard = b.boardWithMove(b.black().get(i), move);
 		
-						value = Math.min(recurse(newBoard, depth - 1, false, alpha, beta), value);
-						if(value<alpha) break;
+						value = Math.min(recurse(newBoard, depth - 1, true, alpha, beta), value);
 						beta = Math.min(beta,value);
+						if(value<=alpha) break;
 					}
 				}
 				return value;
