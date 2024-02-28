@@ -6,9 +6,10 @@ public class Board {
 	float score = 0;
 	Piece board[][] = new Piece[8][8];
 	ArrayList<Piece> onBoard = new ArrayList<>();
+	public int fiftyMove;
 
 	public Board() {
-
+		fiftyMove = 0;
 	}
 
 	public Board(Board original) {
@@ -39,6 +40,7 @@ public class Board {
 				}
 			}
 		}
+		this.fiftyMove = original.fiftyMove;
 	}
 
 	public Board boardWithMove(Piece p, DeltaMovement d) {

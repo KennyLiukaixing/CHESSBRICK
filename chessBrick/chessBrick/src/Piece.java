@@ -35,6 +35,15 @@ public abstract class Piece {
 			for (DeltaMovement d : this.legalNoCheck()) {
 				if (d.dx == Tgtx && d.dy == Tgty) {
 					success = true;
+
+					if (board.board[Tgtx][Tgty] != null) {
+						board.fiftyMove = 0;
+					}
+					else if (this.tag == 'p' || this.tag == 'P') {
+						board.fiftyMove = 0;
+					} else {
+						board.fiftyMove++;
+					}
 					
 					board.replace(Tgtx, Tgty, this, this.xPos, this.yPos);
 					xPos = d.dx;

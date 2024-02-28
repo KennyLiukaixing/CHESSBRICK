@@ -25,7 +25,7 @@ public class MCTS {
                 System.out.println("No node to explore!");
                 break; // Exit the loop if no node to explore is found
             }
-            int playoutResult = simulateRandomPlayout(nodeToExplore);
+            int playoutResult = simulateRandomPlayout(nodeToExplore, nodeToExplore.board);
             backPropagation(nodeToExplore, playoutResult);
         }
         Node winnerNode = root.getChildWithMaxScore();
@@ -62,40 +62,38 @@ public class MCTS {
     }
     
 
-    private static int simulateRandomPlayout(Node node) {
-
-        Board tempBoard = new Board(node.board);
+    private static int simulateRandomPlayout(Node node, Board initialBoard) {
+        Board tempBoard = new Board(initialBoard); // Use the provided initial board state
         boolean isWhiteMove = node.isWhiteMove;
         int gameResult = tempBoard.gameEnd(isWhiteMove);
         Random rand = new Random();
-
+    
         while (gameResult == 2) {
-
             ArrayList<ArrayList<DeltaMovement>> allMoves = tempBoard.allMoves(isWhiteMove);
-
+    
             int randomIndex = rand.nextInt(allMoves.size());
             ArrayList<DeltaMovement> randomPieceMoves = allMoves.get(rand.nextInt(allMoves.size()));
-            
+    
             while (randomPieceMoves.size() == 0) {
                 randomIndex = rand.nextInt(allMoves.size());
-
                 randomPieceMoves = allMoves.get(randomIndex);
             }
             int randomIndex2 = rand.nextInt(randomPieceMoves.size());
-
+    
             DeltaMovement randomMove = randomPieceMoves.get(randomIndex2);
             if (isWhiteMove) {
                 randomMove.p = tempBoard.white().get(randomIndex);
             } else {
                 randomMove.p = tempBoard.black().get(randomIndex);
             }
-
+    
             tempBoard = tempBoard.boardWithMove(randomMove.p, randomMove);
             isWhiteMove = !isWhiteMove;
             gameResult = tempBoard.gameEnd(isWhiteMove);
         }
         return gameResult;
     }
+    
 
     private static void backPropagation(Node nodeToExplore, int playoutResult) {
         Node tempNode = nodeToExplore;

@@ -51,6 +51,10 @@ public class Game {
 		while (true) {
 			// board.evalBoard();
 			printGood(board);
+			if (board.fiftyMove >= 100) {
+				System.out.println("FIFTY MOVE DRAW");
+				break;
+			}
 			System.out.println(board.eval());
 			if (board.gameEnd(isPlayerTurn) != 2) {
 				if (board.gameEnd(isPlayerTurn) == 0) {
