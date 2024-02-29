@@ -146,18 +146,24 @@ public class Board {
 		if (depth == 0) {
 			return b.eval();
 		} else {
+			boolean shouldBreak = false;
 			ArrayList<ArrayList<DeltaMovement>> moves = b.allMoves(isWhiteTurn);
 			if(isWhiteTurn){
 				float value = -Float.MAX_VALUE;
 				for (int i = 0; i < moves.size(); i++) {
+					if(shouldBreak) break;
 					ArrayList<DeltaMovement> pieceMoves = moves.get(i);
 					for (DeltaMovement move : pieceMoves) {
-						Board newBoard;
-						newBoard = b.boardWithMove(b.white().get(i), move);
-		
-						value = Math.max(recurse(newBoard, depth - 1, false, alpha, beta), value);
+						if(shouldBreak) break;
+						/*Board newBoard;
+						newBoard = b.boardWithMove(b.white().get(i), move);*/
+						Piece p = b.white().get(0);
+
+						value = Math.max(recurse(b.makeMove(p.xPos,p.yPos,move.dx,move.dy), depth - 1, false, alpha, beta), value);
+
 						alpha = Math.max(alpha,value);
-						if(value>=beta) break;
+
+						if(value>beta) shouldBreak = true;
 					}
 				}
 				return value;
@@ -165,14 +171,19 @@ public class Board {
 			else {
 				float value = Float.MAX_VALUE;
 				for (int i = 0; i < moves.size(); i++) {
+					if(shouldBreak) break;
 					ArrayList<DeltaMovement> pieceMoves = moves.get(i);
 					for (DeltaMovement move : pieceMoves) {
-						Board newBoard;
-						newBoard = b.boardWithMove(b.black().get(i), move);
-		
-						value = Math.min(recurse(newBoard, depth - 1, true, alpha, beta), value);
+						if(shouldBreak) break;
+						//Board newBoard;
+						//newBoard = b.boardWithMove(b.black().get(i), move);
+						Piece p = b.black().get(0);
+
+						value = Math.min(recurse(b.makeMove(p.xPos,p.yPos,move.dx,move.dy), depth - 1, true, alpha, beta), value);
+
 						beta = Math.min(beta,value);
-						if(value<=alpha) break;
+
+						if(value<alpha) shouldBreak = true;
 					}
 				}
 				return value;
@@ -180,11 +191,15 @@ public class Board {
 		}
 	}
 	
+	public Board makeMove(int origX, int origY, int tgtX, int tgtY){
+		Piece p = board[origX][origY];
+		p.forceMove(tgtX, tgtY);
+		return this;
+	}
 
 	public ArrayList<ArrayList<DeltaMovement>> allMoves(boolean isWhite) {
 		ArrayList<ArrayList<DeltaMovement>> moves = new ArrayList<>();
 		for (int i = 0; i < onBoard.size(); i++) {
-
 			Piece p = onBoard.get(i);
 			if (Piece.isWhite(p.tag) == isWhite) {
 				moves.add(p.legalNoCheck());
@@ -192,8 +207,6 @@ public class Board {
 		}
 		return moves;
 	}
-
-
 	
 	public int gameEnd(boolean isPlayerMove) {
 		if (isPlayerMove) {

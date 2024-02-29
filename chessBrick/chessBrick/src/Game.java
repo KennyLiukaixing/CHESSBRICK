@@ -74,7 +74,7 @@ public class Game {
 				if (notation(s, board))
 					isPlayerTurn = false;
 			} else {
-				DeltaMovement move = MCTS.monteCarlo(board, isPlayerTurn);
+				/*DeltaMovement move = MCTS.monteCarlo(board, isPlayerTurn);
 				if (move != null && move.p != null) {
 					board.board[move.p.xPos][move.p.yPos].forceMove(move.dx, move.dy);
 				} else {
@@ -82,6 +82,9 @@ public class Game {
 					// For example, print an error message or handle the situation accordingly
 					System.out.println("No valid move found.");
 				}
+				isPlayerTurn = true;*/
+				DeltaMovement d = board.miniMax2();
+				d.p.forceMove(d.dx, d.dy);;
 				isPlayerTurn = true;
 			}
 		}
