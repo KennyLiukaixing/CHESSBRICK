@@ -7,7 +7,8 @@ public abstract class Piece {
 	public Board board;
 	public ArrayList<DeltaMovement> moves = new ArrayList<DeltaMovement>();
 	public ArrayList<DeltaMovement> captureMoves = new ArrayList<DeltaMovement>();
-	public ArrayList<DeltaMovement> legalNoCheck = legalNoCheck();
+	public ArrayList<DeltaMovement> legalNoCheck = new ArrayList<>();
+	public ArrayList<DeltaMovement> legalMoves = new ArrayList<>();
 
 	int xPos, yPos;
 	boolean isPlayerSide = false;
@@ -29,22 +30,26 @@ public abstract class Piece {
 	}
 
 	public boolean makeMovePlayer(int Tgtx, int Tgty) {
-		legalNoCheck = legalNoCheck();
+		System.out.println(this.xPos + " " + this.yPos + "    " + Tgtx + " " + Tgty);
+		this.legalNoCheck = this.legalNoCheck();
+
 		boolean success = false;
+		
 		if (this.isPlayerSide) {
-			for (DeltaMovement d : this.legalNoCheck()) {
+			for (DeltaMovement d : this.legalNoCheck) {
+				System.out.println(d.dx + " " + d.dy);
 				if (d.dx == Tgtx && d.dy == Tgty) {
+					
 					success = true;
 
 					if (board.board[Tgtx][Tgty] != null) {
 						board.fiftyMove = 0;
-					}
-					else if (this.tag == 'p' || this.tag == 'P') {
+					} else if (this.tag == 'p' || this.tag == 'P') {
 						board.fiftyMove = 0;
 					} else {
 						board.fiftyMove++;
 					}
-					
+
 					board.replace(Tgtx, Tgty, this, this.xPos, this.yPos);
 					xPos = d.dx;
 					yPos = d.dy;
@@ -59,6 +64,10 @@ public abstract class Piece {
 					}
 				}
 			}
+		}
+		for (int i = 0; i < this.board.onBoard.size(); i++) {
+			Piece p = this.board.onBoard.get(i);
+			p.legalNoCheck = legalNoCheck();
 		}
 		return success;
 	}
@@ -130,6 +139,7 @@ public abstract class Piece {
 					}
 				}
 			}
+			this.legalMoves = legals;
 			return legals;
 		} else if (this.tag == 'P' || this.tag == 'p') { // handles pawn movement
 			for (DeltaMovement d : moves) {
@@ -143,6 +153,7 @@ public abstract class Piece {
 								new DeltaMovement(xPos + d.dx, yPos + d.dy));
 					if (moved == false) {
 						if (board.isEmpty(xPos + d.dx * 2, yPos + d.dy * 2)) {
+							System.out.println("a");
 							legals.add(
 									new DeltaMovement(xPos + d.dx * 2, yPos + d.dy * 2));
 						}
@@ -161,6 +172,7 @@ public abstract class Piece {
 					}
 				}
 			}
+			this.legalMoves = legals;
 			return legals;
 		} else {
 			for (DeltaMovement d : moves) {
@@ -182,6 +194,7 @@ public abstract class Piece {
 					}
 				}
 			}
+			this.legalMoves = legals;
 			return legals;
 		}
 	}
@@ -189,35 +202,37 @@ public abstract class Piece {
 	public ArrayList<DeltaMovement> legalNoCheck() {
 
 		ArrayList<DeltaMovement> legals = new ArrayList<>();
-		ArrayList<DeltaMovement> possibles = legalMoves();
+		ArrayList<DeltaMovement> possibles = this.legalMoves();
 
 		for (DeltaMovement move : possibles) {
 			// Create a temporary board to simulate the move
-			Board temp = new Board(board); // Assuming you have a constructor to create a deep copy of the board
+			int x = xPos;
+			int y = yPos;
 
 			// Apply the move to the temporary board
-			temp.board[xPos][yPos].forceMove(move.dx, move.dy);
+			this.board.board[xPos][yPos].forceMove(move.dx, move.dy);
 
 			if (isWhite(this.tag)) {
 
-				DeltaMovement kingPos = temp.getKingPos('W');
-				if (!isKingUnderAttack('W', kingPos.dx, kingPos.dy, temp)) {
+				DeltaMovement kingPos = board.getKingPos('W');
+				if (!isKingUnderAttack('W', kingPos.dx, kingPos.dy, board)) {
 					legals.add(move);
 				} else {
 				} // System.out.println(kingPos.dx+" "+kingPos.dy);
 
 			} else {
 
-				DeltaMovement kingPos = temp.getKingPos('B');
-				if (!isKingUnderAttack('B', kingPos.dx, kingPos.dy, temp)) {
+				DeltaMovement kingPos = board.getKingPos('B');
+				if (!isKingUnderAttack('B', kingPos.dx, kingPos.dy, board)) {
 					legals.add(move);
 				}
 			}
-
+			this.board.board[move.dx][move.dy].forceMove(x, y);
 		}
 		for (int j = 0; j < legals.size(); j++) {
 			legals.get(j).p = this;
 		}
+
 		return legals;
 	}
 
@@ -229,6 +244,7 @@ public abstract class Piece {
 			// Check if the piece belongs to the opposing side
 			if ((WorB == 'W' && !Piece.isWhite(piece.tag)) || (WorB == 'B' && Piece.isWhite(piece.tag))) {
 				// Check if the piece can attack the king position
+
 				for (DeltaMovement move : piece.legalMoves()) {
 					int newX = move.dx;
 					int newY = move.dy;

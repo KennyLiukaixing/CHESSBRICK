@@ -1,5 +1,4 @@
-import java.util.*;
-
+import java.util.ArrayList;
 
 public class Board {
 
@@ -40,6 +39,10 @@ public class Board {
 				}
 			}
 		}
+		for (int i = 0; i < onBoard.size(); i++) {
+			Piece p = onBoard.get(i);
+			p.legalNoCheck = p.legalNoCheck();
+		}
 		this.fiftyMove = original.fiftyMove;
 	}
 
@@ -50,7 +53,6 @@ public class Board {
 		return bo;
 	}
 
-	
 	public float eval() {
 		float eval = 0;
 		if (gameEnd(true) == 1) {
@@ -70,14 +72,14 @@ public class Board {
 
 			eval += sign * p.mat;
 
-			for (int j = 0; j < p.legalNoCheck().size(); j++) {
-				if (Game.unNull(board[p.legalNoCheck().get(j).dx][p.legalNoCheck().get(j).dy])) {
-					eval += sign * 0.05 * board[p.legalNoCheck().get(j).dx][p.legalNoCheck().get(j).dy].mat;
+			for (int j = 0; j < p.legalNoCheck.size(); j++) {
+				if (Game.unNull(board[p.legalNoCheck.get(j).dx][p.legalNoCheck.get(j).dy])) {
+					eval += sign * 0.05 * board[p.legalNoCheck.get(j).dx][p.legalNoCheck.get(j).dy].mat;
 				} else {
 					eval += sign * 0.05;
 				}
 			}
-			
+
 		}
 		return eval;
 	}
@@ -85,27 +87,27 @@ public class Board {
 	public DeltaMovement miniMax2() {
 		ArrayList<ArrayList<DeltaMovement>> moves = allMoves(false);
 		ArrayList<ArrayList<Float>> evals = new ArrayList<>(); // Initialize the evals ArrayList
-	
+
 		// Populate the evals ArrayList
 		for (int i = 0; i < moves.size(); i++) {
 			evals.add(new ArrayList<Float>()); // Initialize inner ArrayList<Float>
 			for (int j = 0; j < moves.get(i).size(); j++) {
 				// Populate the inner ArrayList<Float> with float values
-				evals.get(i).add(recurse(boardWithMove(black().get(i), moves.get(i).get(j)), 2, true, -Float.MAX_VALUE, Float.MAX_VALUE));
+				evals.get(i).add(recurse(boardWithMove(black().get(i), moves.get(i).get(j)), 2, true, -Float.MAX_VALUE,
+						Float.MAX_VALUE));
 			}
 		}
-	
-		int[] minimum = minimum(evals); 
+
+		int[] minimum = minimum(evals);
 		DeltaMovement move = moves.get(minimum[0]).get(minimum[1]);
 		move.p = black().get(minimum[0]);
 		return move;
 	}
-	
 
 	public int[] minimum(ArrayList<ArrayList<Float>> moves) {
 		float[] mins = new float[moves.size()];
 		int[] indexes = new int[moves.size()];
-	
+
 		for (int i = 0; i < moves.size(); i++) {
 			if (moves.get(i).isEmpty()) {
 				mins[i] = Float.MAX_VALUE; // Set to a large value
@@ -113,34 +115,33 @@ public class Board {
 			} else {
 				float localMin = Float.MAX_VALUE; // Initialize to a large value
 				int index = -1;
-	
+
 				for (int j = 0; j < moves.get(i).size(); j++) {
 					if (moves.get(i).get(j) < localMin) {
 						localMin = moves.get(i).get(j);
 						index = j;
 					}
 				}
-	
+
 				mins[i] = localMin;
 				indexes[i] = index;
 			}
 		}
-	
+
 		float largeMin = Float.MAX_VALUE; // Initialize to a large value
 		int index = -1;
-	
+
 		for (int i = 0; i < mins.length; i++) {
 			if (mins[i] < largeMin && indexes[i] != -1) {
 				largeMin = mins[i];
 				index = i;
 			}
 		}
-	
+
 		// Return the array of indexes
 		System.out.println(moves.get(index).get(indexes[index]));
-		return new int[]{index, indexes[index]};
+		return new int[] { index, indexes[index] };
 	}
-	
 
 	public float recurse(Board b, int depth, boolean isWhiteTurn, float alpha, float beta) {
 		if (depth == 0) {
@@ -148,53 +149,63 @@ public class Board {
 		} else {
 			boolean shouldBreak = false;
 			ArrayList<ArrayList<DeltaMovement>> moves = b.allMoves(isWhiteTurn);
-			if(isWhiteTurn){
+			if (isWhiteTurn) {
 				float value = -Float.MAX_VALUE;
 				for (int i = 0; i < moves.size(); i++) {
-					if(shouldBreak) break;
+					if (shouldBreak)
+						break;
 					ArrayList<DeltaMovement> pieceMoves = moves.get(i);
 					for (DeltaMovement move : pieceMoves) {
-						if(shouldBreak) break;
-						/*Board newBoard;
-						newBoard = b.boardWithMove(b.white().get(i), move);*/
-						Piece p = b.white().get(0);
+						if (shouldBreak)
+							break;
 
-						value = Math.max(recurse(b.makeMove(p.xPos,p.yPos,move.dx,move.dy), depth - 1, false, alpha, beta), value);
+						Board newBoard;
+						newBoard = b.boardWithMove(b.white().get(i), move);
 
-						alpha = Math.max(alpha,value);
+						// Piece p = b.white().get(i);
 
-						if(value>beta) shouldBreak = true;
+						value = Math.max(
+								recurse(newBoard, depth - 1, false, alpha, beta), value);
+
+						alpha = Math.max(alpha, value);
+
+						if (value > beta)
+							shouldBreak = true;
 					}
 				}
 				return value;
-			}
-			else {
+			} else {
 				float value = Float.MAX_VALUE;
 				for (int i = 0; i < moves.size(); i++) {
-					if(shouldBreak) break;
+					if (shouldBreak)
+						break;
 					ArrayList<DeltaMovement> pieceMoves = moves.get(i);
 					for (DeltaMovement move : pieceMoves) {
-						if(shouldBreak) break;
-						//Board newBoard;
-						//newBoard = b.boardWithMove(b.black().get(i), move);
-						Piece p = b.black().get(0);
+						if (shouldBreak)
+							break;
+						Board newBoard;
+						newBoard = b.boardWithMove(b.black().get(i), move);
+						// Piece p = b.black().get(i);
 
-						value = Math.min(recurse(b.makeMove(p.xPos,p.yPos,move.dx,move.dy), depth - 1, true, alpha, beta), value);
+						value = Math.min(
+								recurse(newBoard, depth - 1, true, alpha, beta), value);
 
-						beta = Math.min(beta,value);
+						beta = Math.min(beta, value);
 
-						if(value<alpha) shouldBreak = true;
+						if (value < alpha)
+							shouldBreak = true;
 					}
 				}
 				return value;
-			}			
+
+			}
 		}
 	}
-	
-	public Board makeMove(int origX, int origY, int tgtX, int tgtY){
-		Piece p = board[origX][origY];
+
+	public Board makeMove(Board b, int origX, int origY, int tgtX, int tgtY) {
+		Piece p = b.board[origX][origY];
 		p.forceMove(tgtX, tgtY);
-		return this;
+		return b;
 	}
 
 	public ArrayList<ArrayList<DeltaMovement>> allMoves(boolean isWhite) {
@@ -202,16 +213,16 @@ public class Board {
 		for (int i = 0; i < onBoard.size(); i++) {
 			Piece p = onBoard.get(i);
 			if (Piece.isWhite(p.tag) == isWhite) {
-				moves.add(p.legalNoCheck());
+				moves.add(p.legalNoCheck);
 			}
 		}
 		return moves;
 	}
-	
+
 	public int gameEnd(boolean isPlayerMove) {
 		if (isPlayerMove) {
 			for (Piece p : onBoard) {
-				if (Piece.isWhite(p.tag) && p.legalNoCheck().size() > 0) {
+				if (Piece.isWhite(p.tag) && p.legalNoCheck.size() > 0) {
 					return 2;
 				}
 			}
@@ -224,7 +235,7 @@ public class Board {
 
 		} else {
 			for (Piece p : onBoard) {
-				if (!Piece.isWhite(p.tag) && p.legalNoCheck().size() > 0) {
+				if (!Piece.isWhite(p.tag) && p.legalNoCheck.size() > 0) {
 					return 2;
 				}
 			}
@@ -278,8 +289,19 @@ public class Board {
 
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
-				if (board[i][j] != null)
+				if (board[i][j] != null) {
 					onBoard.add(board[i][j]);
+				}
+			}
+		}
+/*board[i][j].legalMoves = board[i][j].legalMoves();
+					board[i][j].legalNoCheck = board[i][j].legalNoCheck(); */
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if (board[i][j] != null) {
+					board[i][j].legalMoves = board[i][j].legalMoves();
+					board[i][j].legalNoCheck = board[i][j].legalNoCheck();
+				}
 			}
 		}
 	}
@@ -334,6 +356,7 @@ public class Board {
 		}
 		return null;
 	}
+
 	public int blackPieces() {
 		int counter = 0;
 		for (int i = 0; i < onBoard.size(); i++) {

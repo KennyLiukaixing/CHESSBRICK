@@ -47,9 +47,8 @@ public class Game {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		Board board = new Board();
 		board.makeDefault();
-	
+
 		while (true) {
-			// board.evalBoard();
 			printGood(board);
 			if (board.fiftyMove >= 100) {
 				System.out.println("FIFTY MOVE DRAW");
@@ -70,27 +69,29 @@ public class Game {
 			}
 			if (isPlayerTurn) {
 				String s = reader.readLine();
-		
+
 				if (notation(s, board))
 					isPlayerTurn = false;
 			} else {
-				/*DeltaMovement move = MCTS.monteCarlo(board, isPlayerTurn);
-				if (move != null && move.p != null) {
-					board.board[move.p.xPos][move.p.yPos].forceMove(move.dx, move.dy);
-				} else {
-					// Handle case where no valid move is found
-					// For example, print an error message or handle the situation accordingly
-					System.out.println("No valid move found.");
-				}
-				isPlayerTurn = true;*/
+				/*
+				 * DeltaMovement move = MCTS.monteCarlo(board, isPlayerTurn);
+				 * if (move != null && move.p != null) {
+				 * board.board[move.p.xPos][move.p.yPos].forceMove(move.dx, move.dy);
+				 * } else {
+				 * // Handle case where no valid move is found
+				 * // For example, print an error message or handle the situation accordingly
+				 * System.out.println("No valid move found.");
+				 * }
+				 * isPlayerTurn = true;
+				 */
 				DeltaMovement d = board.miniMax2();
-				d.p.forceMove(d.dx, d.dy);;
+				d.p.forceMove(d.dx, d.dy);
+				;
 				isPlayerTurn = true;
 			}
 		}
-		
+
 	}
-	
 
 	public static boolean notation(String notation, Board b) {
 
